@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Counting Sort – Visualización</title>
+  <style>
+    /* ── Reset & base ────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: .05em;
+      margin-bottom: .25rem;
+      color: #7dd3fc;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      margin-bottom: 2rem;
+      font-size: .95rem;
+    }
+
+    /* ── Card ────────────────────────────────────────────────── */
+    .card {
+      background: #1e293b;
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      margin: 0 auto 1.5rem;
+      max-width: 860px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #334155;
+      padding-bottom: .5rem;
+    }
+
+    /* ── Controls ────────────────────────────────────────────── */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: center;
+    }
+
+    .controls label { font-size: .9rem; color: #94a3b8; }
+
+    .controls input[type="text"] {
+      flex: 1;
+      min-width: 200px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: .5rem;
+      padding: .5rem .75rem;
+      color: #e2e8f0;
+      font-size: 1rem;
+    }
+
+    .controls input[type="text"]:focus {
+      outline: none;
+      border-color: #38bdf8;
+    }
+
+    .btn {
+      padding: .5rem 1.2rem;
+      border: none;
+      border-radius: .5rem;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: opacity .2s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn-primary  { background: #0ea5e9; color: #0f172a; }
+    .btn-success  { background: #22c55e; color: #0f172a; }
+    .btn-warning  { background: #f59e0b; color: #0f172a; }
+    .btn-neutral  { background: #475569; color: #e2e8f0; }
+
+    /* ── Speed slider ────────────────────────────────────────── */
+    .speed-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .speed-row label { font-size: .9rem; color: #94a3b8; white-space: nowrap; }
+    input[type="range"] {
+      accent-color: #38bdf8;
+      cursor: pointer;
+    }
+
+    /* ── Array bars ──────────────────────────────────────────── */
+    .array-wrapper {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+      height: 160px;
+      margin-top: .75rem;
+    }
+
+    .bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all .3s;
+    }
+
+    .bar {
+      width: 40px;
+      min-height: 4px;
+      border-radius: 4px 4px 0 0;
+      background: #38bdf8;
+      transition: height .35s, background .35s;
+    }
+
+    .bar.highlight { background: #f59e0b; }
+    .bar.sorted    { background: #22c55e; }
+    .bar.active    { background: #f43f5e; }
+
+    .bar-label {
+      font-size: .8rem;
+      color: #94a3b8;
+    }
+
+    /* ── Count / output arrays ───────────────────────────────── */
+    .small-array {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: .75rem;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .cell-box {
+      width: 42px;
+      height: 42px;
+      border: 2px solid #334155;
+      border-radius: .4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      background: #0f172a;
+      transition: background .35s, border-color .35s;
+    }
+
+    .cell-box.highlight { border-color: #f59e0b; background: #422006; }
+    .cell-box.active    { border-color: #f43f5e; background: #4c0519; }
+    .cell-box.done      { border-color: #22c55e; background: #052e16; }
+
+    .cell-index {
+      font-size: .7rem;
+      color: #64748b;
+    }
+
+    /* ── Step log ────────────────────────────────────────────── */
+    #stepLog {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: .5rem;
+      padding: .75rem 1rem;
+      font-size: .9rem;
+      min-height: 2.5rem;
+      color: #e2e8f0;
+      margin-top: .75rem;
+      line-height: 1.5;
+    }
+
+    /* ── Algorithm pseudocode ────────────────────────────────── */
+    pre {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: .5rem;
+      padding: 1rem;
+      font-size: .85rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      color: #94a3b8;
+    }
+
+    pre .kw { color: #f472b6; }
+    pre .cm { color: #475569; }
+    pre .fn { color: #38bdf8; }
+    pre .num { color: #fb923c; }
+
+    pre .hl { background: #1e3a5f; display: inline-block; width: 100%; border-radius: 3px; }
+
+    /* ── Complexity table ────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+      margin-top: .5rem;
+    }
+
+    th, td {
+      padding: .5rem .75rem;
+      border: 1px solid #334155;
+      text-align: center;
+    }
+
+    th { background: #0f172a; color: #38bdf8; }
+    td { color: #cbd5e1; }
+    tr:nth-child(even) td { background: #0f172a; }
+
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .bar { width: 28px; }
+      .cell-box { width: 34px; height: 34px; font-size: .85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>⚡ Counting Sort</h1>
+<p class="subtitle">Visualización interactiva paso a paso – Análisis de Algoritmos</p>
+
+<!-- ── Input card ─────────────────────────────────────────── -->
+<div class="card">
+  <h2>Arreglo de entrada</h2>
+  <div class="controls">
+    <label for="inputArr">Números (0–99, separados por comas):</label>
+    <input type="text" id="inputArr" value="5, 3, 8, 1, 4, 9, 2, 7, 6, 0" />
+    <button class="btn btn-neutral" id="btnRandom">🎲 Aleatorio</button>
+    <button class="btn btn-primary" id="btnLoad">Cargar</button>
+  </div>
+  <div class="array-wrapper" id="inputBars"></div>
+</div>
+
+<!-- ── Controls card ─────────────────────────────────────── -->
+<div class="card">
+  <h2>Controles</h2>
+  <div class="controls">
+    <button class="btn btn-success" id="btnPlay">▶ Iniciar</button>
+    <button class="btn btn-warning" id="btnStep" disabled>➡ Paso</button>
+    <button class="btn btn-neutral" id="btnReset" disabled>↺ Reiniciar</button>
+  </div>
+  <div class="speed-row" style="margin-top:.75rem">
+    <label for="speedRange">Velocidad:</label>
+    <input type="range" id="speedRange" min="100" max="2000" value="700" step="100" />
+    <span id="speedLabel" style="color:#94a3b8;font-size:.85rem">700 ms</span>
+  </div>
+  <div id="stepLog">Carga un arreglo y pulsa <strong>Iniciar</strong> o <strong>Paso</strong>.</div>
+</div>
+
+<!-- ── Count array card ───────────────────────────────────── -->
+<div class="card">
+  <h2>Arreglo de conteo <span style="color:#64748b;font-size:.85rem">(count[])</span></h2>
+  <div class="small-array" id="countArr"></div>
+</div>
+
+<!-- ── Prefix sum card ───────────────────────────────────── -->
+<div class="card">
+  <h2>Suma de prefijos <span style="color:#64748b;font-size:.85rem">(posiciones)</span></h2>
+  <div class="small-array" id="prefixArr"></div>
+</div>
+
+<!-- ── Output card ────────────────────────────────────────── -->
+<div class="card">
+  <h2>Arreglo de salida <span style="color:#64748b;font-size:.85rem">(output[])</span></h2>
+  <div class="small-array" id="outputArr"></div>
+</div>
+
+<!-- ── Pseudocode card ────────────────────────────────────── -->
+<div class="card">
+  <h2>Pseudocódigo</h2>
+  <pre id="pseudocode"><span class="fn">countingSort</span>(A, k):
+  <span class="cm">// k = valor máximo en A</span>
+  count = <span class="kw">new</span> Array(k+<span class="num">1</span>).fill(<span class="num">0</span>)          <span id="ps1" class="cm"> ← Fase 1</span>
+
+  <span class="kw">for</span> i = <span class="num">0</span> <span class="kw">to</span> A.length-<span class="num">1</span>:               <span id="ps2" class="cm"> ← Fase 2</span>
+    count[A[i]]++
+
+  <span class="kw">for</span> i = <span class="num">1</span> <span class="kw">to</span> k:                         <span id="ps3" class="cm"> ← Fase 3</span>
+    count[i] += count[i-<span class="num">1</span>]
+
+  output = <span class="kw">new</span> Array(A.length)             <span id="ps4" class="cm"> ← Fase 4</span>
+  <span class="kw">for</span> i = A.length-<span class="num">1</span> <span class="kw">downto</span> <span class="num">0</span>:
+    output[count[A[i]]-<span class="num">1</span>] = A[i]
+    count[A[i]]--
+
+  <span class="kw">return</span> output</pre>
+</div>
+
+<!-- ── Complexity card ────────────────────────────────────── -->
+<div class="card">
+  <h2>Complejidad</h2>
+  <table>
+    <thead>
+      <tr><th>Caso</th><th>Tiempo</th><th>Espacio</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Mejor</td><td>O(n + k)</td><td>O(n + k)</td></tr>
+      <tr><td>Promedio</td><td>O(n + k)</td><td>O(n + k)</td></tr>
+      <tr><td>Peor</td><td>O(n + k)</td><td>O(n + k)</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:.75rem;font-size:.85rem;color:#64748b">
+    <strong>n</strong> = tamaño del arreglo · <strong>k</strong> = valor máximo
+    · El algoritmo es <em>estable</em> y <em>no comparativo</em>.
+  </p>
+</div>
+
+<!-- ── Script ─────────────────────────────────────────────── -->
+<script>
+(() => {
+  /* ── State ───────────────────────────────────────────────── */
+  let input = [];
+  let steps = [];       // pre-computed animation frames
+  let stepIdx = 0;
+  let autoTimer = null;
+  let running = false;
+
+  /* ── DOM refs ────────────────────────────────────────────── */
+  const inputBarsEl = document.getElementById('inputBars');
+  const countArrEl  = document.getElementById('countArr');
+  const prefixArrEl = document.getElementById('prefixArr');
+  const outputArrEl = document.getElementById('outputArr');
+  const stepLogEl   = document.getElementById('stepLog');
+  const speedRange  = document.getElementById('speedRange');
+  const speedLabel  = document.getElementById('speedLabel');
+  const btnPlay     = document.getElementById('btnPlay');
+  const btnStep     = document.getElementById('btnStep');
+  const btnReset    = document.getElementById('btnReset');
+  const btnLoad     = document.getElementById('btnLoad');
+  const btnRandom   = document.getElementById('btnRandom');
+
+  /* ── Speed ───────────────────────────────────────────────── */
+  speedRange.addEventListener('input', () => {
+    speedLabel.textContent = speedRange.value + ' ms';
+  });
+
+  /* ── Load / random ───────────────────────────────────────── */
+  btnLoad.addEventListener('click', loadArray);
+  btnRandom.addEventListener('click', () => {
+    const len = Math.floor(Math.random() * 6) + 5; // 5-10 elements
+    const arr = Array.from({length: len}, () => Math.floor(Math.random() * 20));
+    document.getElementById('inputArr').value = arr.join(', ');
+    loadArray();
+  });
+
+  function loadArray() {
+    stopAuto();
+    const raw = document.getElementById('inputArr').value;
+    const parsed = raw.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n) && n >= 0 && n <= 99);
+    if (parsed.length < 2) {
+      stepLogEl.innerHTML = '<span style="color:#f43f5e">⚠ Ingresa al menos 2 números entre 0 y 99.</span>';
+      return;
+    }
+    input = parsed;
+    steps = buildSteps(input);
+    stepIdx = 0;
+    setButtonState('loaded');
+    renderStep(steps[0]);
+  }
+
+  /* ── Play / step / reset ─────────────────────────────────── */
+  btnPlay.addEventListener('click', () => {
+    if (running) { stopAuto(); return; }
+    if (stepIdx >= steps.length) { stepIdx = 0; }
+    running = true;
+    btnPlay.textContent = '⏸ Pausar';
+    btnStep.disabled = true;
+    advance();
+  });
+
+  btnStep.addEventListener('click', () => {
+    if (stepIdx < steps.length) {
+      renderStep(steps[stepIdx++]);
+      if (stepIdx >= steps.length) setButtonState('done');
+    }
+  });
+
+  btnReset.addEventListener('click', () => {
+    stopAuto();
+    stepIdx = 0;
+    setButtonState('loaded');
+    if (steps.length) renderStep(steps[0]);
+  });
+
+  function advance() {
+    if (!running || stepIdx >= steps.length) {
+      stopAuto();
+      setButtonState('done');
+      return;
+    }
+    renderStep(steps[stepIdx++]);
+    autoTimer = setTimeout(advance, parseInt(speedRange.value, 10));
+  }
+
+  function stopAuto() {
+    clearTimeout(autoTimer);
+    running = false;
+    btnPlay.textContent = '▶ Iniciar';
+  }
+
+  function setButtonState(state) {
+    if (state === 'loaded') {
+      btnPlay.disabled  = false;
+      btnStep.disabled  = false;
+      btnReset.disabled = false;
+      btnPlay.textContent = '▶ Iniciar';
+    } else if (state === 'done') {
+      running = false;
+      btnPlay.textContent = '▶ Iniciar';
+      btnStep.disabled = true;
+    }
+  }
+
+  /* ── Pre-compute all animation steps ─────────────────────── */
+  function buildSteps(A) {
+    const frames = [];
+    const n = A.length;
+    const k = Math.max(...A, 0);
+
+    const count  = new Array(k + 1).fill(0);
+    const output = new Array(n).fill(null);
+
+    /* Phase 0 – initial state */
+    frames.push({
+      phase: 0,
+      msg: `Arreglo inicial: [${A.join(', ')}]. Valor máximo k = ${k}.`,
+      inputHL: [],
+      countSnap: [...count],
+      countHL: [],
+      prefixSnap: null,
+      prefixHL: [],
+      outputSnap: [...output],
+      outputHL: [],
+    });
+
+    /* Phase 1 – init count array */
+    frames.push({
+      phase: 1,
+      msg: `Fase 1: Crear arreglo de conteo de tamaño k+1 = ${k+1}, inicializado en 0.`,
+      inputHL: [],
+      countSnap: [...count],
+      countHL: [],
+      prefixSnap: null,
+      prefixHL: [],
+      outputSnap: [...output],
+      outputHL: [],
+    });
+
+    /* Phase 2 – fill count */
+    for (let i = 0; i < n; i++) {
+      count[A[i]]++;
+      frames.push({
+        phase: 2,
+        msg: `Fase 2 [i=${i}]: A[${i}] = ${A[i]} → count[${A[i]}]++ = ${count[A[i]]}.`,
+        inputHL: [i],
+        countSnap: [...count],
+        countHL: [A[i]],
+        prefixSnap: null,
+        prefixHL: [],
+        outputSnap: [...output],
+        outputHL: [],
+      });
+    }
+
+    /* Phase 3 – prefix sums */
+    const prefix = [...count];
+    frames.push({
+      phase: 3,
+      msg: 'Fase 3: Calcular suma de prefijos para obtener posiciones finales.',
+      inputHL: [],
+      countSnap: [...count],
+      countHL: [],
+      prefixSnap: [...prefix],
+      prefixHL: [],
+      outputSnap: [...output],
+      outputHL: [],
+    });
+    for (let i = 1; i <= k; i++) {
+      prefix[i] += prefix[i - 1];
+      frames.push({
+        phase: 3,
+        msg: `Fase 3 [i=${i}]: prefix[${i}] = ${prefix[i] - prefix[i - 1]} + ${prefix[i - 1]} = ${prefix[i]}.`,
+        inputHL: [],
+        countSnap: [...count],
+        countHL: [],
+        prefixSnap: [...prefix],
+        prefixHL: [i],
+        outputSnap: [...output],
+        outputHL: [],
+      });
+    }
+
+    /* Phase 4 – build output (right-to-left for stability) */
+    const workPrefix = [...prefix];
+    frames.push({
+      phase: 4,
+      msg: 'Fase 4: Colocar elementos en el arreglo de salida (derecha → izquierda para mantener estabilidad).',
+      inputHL: [],
+      countSnap: [...count],
+      countHL: [],
+      prefixSnap: [...workPrefix],
+      prefixHL: [],
+      outputSnap: [...output],
+      outputHL: [],
+    });
+    for (let i = n - 1; i >= 0; i--) {
+      const val = A[i];
+      const pos = workPrefix[val] - 1;
+      output[pos] = val;
+      workPrefix[val]--;
+      frames.push({
+        phase: 4,
+        msg: `Fase 4 [i=${i}]: A[${i}] = ${val} → posición ${pos} en output. prefix[${val}] ahora = ${workPrefix[val]}.`,
+        inputHL: [i],
+        countSnap: [...count],
+        countHL: [],
+        prefixSnap: [...workPrefix],
+        prefixHL: [val],
+        outputSnap: [...output],
+        outputHL: [pos],
+      });
+    }
+
+    /* Final */
+    frames.push({
+      phase: 5,
+      msg: `✅ ¡Ordenamiento completo! Resultado: [${output.join(', ')}].`,
+      inputHL: [],
+      countSnap: [...count],
+      countHL: [],
+      prefixSnap: [...workPrefix],
+      prefixHL: [],
+      outputSnap: [...output],
+      outputHL: output.map((_, i) => i),
+    });
+
+    return frames;
+  }
+
+  /* ── Render a single frame ────────────────────────────────── */
+  function renderStep(frame) {
+    stepLogEl.innerHTML = frame.msg;
+
+    // Input bars
+    renderBars(inputBarsEl, input, frame.inputHL, frame.phase === 5);
+
+    // Count array
+    if (frame.countSnap) {
+      renderCells(countArrEl, frame.countSnap, frame.countHL, false, true);
+    }
+
+    // Prefix array
+    if (frame.prefixSnap !== null) {
+      renderCells(prefixArrEl, frame.prefixSnap, frame.prefixHL, false, true);
+    } else {
+      prefixArrEl.innerHTML = '<span style="color:#475569;font-size:.85rem">Se calculará en la Fase 3.</span>';
+    }
+
+    // Output array
+    renderCells(outputArrEl, frame.outputSnap, frame.outputHL, true, false);
+  }
+
+  function renderBars(container, arr, highlights, allDone) {
+    const maxVal = Math.max(...arr, 1);
+    container.innerHTML = '';
+    arr.forEach((v, i) => {
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      if (allDone)              bar.classList.add('sorted');
+      else if (highlights.includes(i)) bar.classList.add('highlight');
+      bar.style.height = Math.max(4, Math.round((v / maxVal) * 140)) + 'px';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'bar-label';
+      lbl.textContent = v;
+
+      col.appendChild(bar);
+      col.appendChild(lbl);
+      container.appendChild(col);
+    });
+  }
+
+  function renderCells(container, arr, highlights, showNull, showIndex) {
+    container.innerHTML = '';
+    arr.forEach((v, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+
+      const box = document.createElement('div');
+      box.className = 'cell-box';
+      if (highlights.includes(i)) {
+        box.classList.add(showNull ? 'done' : 'highlight');
+      }
+      if (showNull && v === null) {
+        box.style.color = '#475569';
+        box.textContent = '–';
+      } else {
+        box.textContent = v;
+      }
+
+      const idx = document.createElement('div');
+      idx.className = 'cell-index';
+      idx.textContent = showIndex ? `[${i}]` : i;
+
+      cell.appendChild(box);
+      cell.appendChild(idx);
+      container.appendChild(cell);
+    });
+  }
+
+  /* ── Bootstrap ───────────────────────────────────────────── */
+  loadArray();
+})();
+</script>
+</body>
+</html>
