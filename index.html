@@ -14,6 +14,8 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
         }
         pre {
             background: #222;
@@ -22,24 +24,91 @@
             border-radius: 8px;
             overflow-x: auto;
         }
-        h1 {
+        h1, h2 {
             color: #333;
+        }
+        .interactive-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            min-width: 200px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4a90d9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .result.success {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
+        }
+        .result.error {
+            background-color: #fdecea;
+            border-left: 4px solid #e53935;
+            color: #b71c1c;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Algoritmo Counting Sort en C</h1>
-    <p>Este es un ejemplo del algoritmo Counting Sort implementado en lenguaje C:</p>
+    <h1>Algoritmo Counting Sort</h1>
+
+    <div class="interactive-section">
+        <h2>Prueba el algoritmo</h2>
+        <p>Ingresa los números separados por comas (enteros no negativos) y presiona <strong>Ordenar</strong>:</p>
+        <div class="input-group">
+            <input type="text" id="arrayInput" placeholder="Ej: 4, 2, 2, 8, 3, 3, 1" />
+            <button onclick="ejecutarCountingSort()">Ordenar</button>
+        </div>
+        <div id="resultado" class="result hidden"></div>
+    </div>
+
+    <h2>Implementación en C</h2>
+    <p>Este es el algoritmo Counting Sort implementado en lenguaje C:</p>
 
     <pre>
-#include <stdio.h>
+#include &lt;stdio.h&gt;
 
 int encontrarMax(int arr[], int n) {
     int max = arr[0];
-    for(int i = 1; i < n; i++) {
-        if(arr[i] > max)
+    for(int i = 1; i &lt; n; i++) {
+        if(arr[i] &gt; max)
             max = arr[i];
     }
     return max;
@@ -49,17 +118,17 @@ void countingSort(int arr[], int n) {
     int max = encontrarMax(arr, n);
     int count[max + 1];
 
-    for(int i = 0; i <= max; i++) {
+    for(int i = 0; i &lt;= max; i++) {
         count[i] = 0;
     }
 
-    for(int i = 0; i < n; i++) {
+    for(int i = 0; i &lt; n; i++) {
         count[arr[i]]++;
     }
 
     int index = 0;
-    for(int i = 0; i <= max; i++) {
-        while(count[i] > 0) {
+    for(int i = 0; i &lt;= max; i++) {
+        while(count[i] &gt; 0) {
             arr[index] = i;
             index++;
             count[i]--;
@@ -73,15 +142,80 @@ int main() {
 
     countingSort(arr, n);
 
-    for(int i = 0; i < n; i++) {
+    for(int i = 0; i &lt; n; i++) {
         printf("%d ", arr[i]);
     }
 
     return 0;
 }
     </pre>
-
 </div>
+
+<script>
+    function ejecutarCountingSort() {
+        var input = document.getElementById('arrayInput').value.trim();
+        var resultDiv = document.getElementById('resultado');
+
+        if (!input) {
+            mostrarError('Por favor ingresa al menos un número.');
+            return;
+        }
+
+        var partes = input.split(',');
+        var arr = [];
+        for (var i = 0; i < partes.length; i++) {
+            var num = parseInt(partes[i].trim(), 10);
+            if (isNaN(num) || num < 0) {
+                mostrarError('Solo se permiten enteros no negativos separados por comas.');
+                return;
+            }
+            arr.push(num);
+        }
+
+        var original = arr.slice();
+        countingSort(arr);
+
+        resultDiv.className = 'result success';
+        resultDiv.innerHTML =
+            '<strong>Arreglo original:</strong> [' + original.join(', ') + ']<br>' +
+            '<strong>Arreglo ordenado:</strong> [' + arr.join(', ') + ']';
+        resultDiv.classList.remove('hidden');
+    }
+
+    function countingSort(arr) {
+        if (arr.length === 0) return;
+
+        var max = arr[0];
+        for (var i = 1; i < arr.length; i++) {
+            if (arr[i] > max) max = arr[i];
+        }
+
+        var count = new Array(max + 1).fill(0);
+        for (var i = 0; i < arr.length; i++) {
+            count[arr[i]]++;
+        }
+
+        var index = 0;
+        for (var i = 0; i <= max; i++) {
+            while (count[i] > 0) {
+                arr[index] = i;
+                index++;
+                count[i]--;
+            }
+        }
+    }
+
+    function mostrarError(mensaje) {
+        var resultDiv = document.getElementById('resultado');
+        resultDiv.className = 'result error';
+        resultDiv.textContent = mensaje;
+        resultDiv.classList.remove('hidden');
+    }
+
+    document.getElementById('arrayInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') ejecutarCountingSort();
+    });
+</script>
 
 </body>
 </html>
