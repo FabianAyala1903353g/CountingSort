@@ -189,8 +189,10 @@ let paused = false;
 
 // velocidad dinámica
 speedSlider.addEventListener('input', () => {
-    speed = parseInt(speedSlider.value);
-    speedValue.textContent = speed + " ms";
+    let raw = parseInt(speedSlider.value);
+speed = 1050 - raw; // invierte
+
+speedValue.textContent = "Velocidad: " + (raw / 10).toFixed(0) + "%";
 });
 
 // pausa
