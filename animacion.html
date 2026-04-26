@@ -65,8 +65,8 @@
             background: #e0e0e0;
         }
 
-        /* GRID DE CUBETAS (SIN SCROLL) */
-        .buckets-wrapper {
+        /* GRID DE CONTADORES (SIN SCROLL) */
+        .contadors-wrapper {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
             gap: 8px;
@@ -76,13 +76,13 @@
             border: 2px solid black;
         }
 
-        .bucket {
+        .contador {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .bucket-box {
+        .contador-box {
             width: 35px;
             height: 35px;
             border: 2px solid black;
@@ -94,12 +94,12 @@
             font-weight: 800;
         }
 
-        .bucket-box.highlight {
+        .contador-box.highlight {
             background: var(--primary);
             color: white;
         }
 
-        .bucket-label {
+        .contador-label {
             font-size: 0.6rem;
             margin-top: 5px;
             font-weight: bold;
@@ -159,8 +159,8 @@
     <div class="label-tag">ARREGLO ORIGINAL:</div>
     <div id="input-array" class="array-container"></div>
 
-    <div class="label-tag">CUBETAS DE CONTEO:</div>
-    <div id="buckets-container" class="buckets-wrapper"></div>
+    <div class="label-tag">CONTADOR:</div>
+    <div id="contadors-container" class="contadors-wrapper"></div>
 
     <div class="label-tag">ARREGLO ORDENADO:</div>
     <div id="output-array" class="array-container"></div>
@@ -173,7 +173,7 @@
     const maxVal = Math.max(...array);
 
     const inputContainer = document.getElementById('input-array');
-    const bucketsContainer = document.getElementById('buckets-container');
+    const contadorsContainer = document.getElementById('contadors-container');
     const outputContainer = document.getElementById('output-array');
     const statusText = document.getElementById('status-text');
     const startBtn = document.getElementById('startBtn');
@@ -188,15 +188,15 @@
             inputContainer.appendChild(div);
         });
 
-        // Cubetas DESDE 0
+        // contador DESDE 0
         for (let i = 0; i <= maxVal; i++) {
-            const bucket = document.createElement('div');
-            bucket.className = 'bucket';
-            bucket.innerHTML = `
-                <div class="bucket-box" id="bucket-${i}">0</div>
-                <div class="bucket-label">${i}</div>
+            const contador = document.createElement('div');
+            contador.className = 'contador';
+            contador.innerHTML = `
+                <div class="contador-box" id="contador-${i}">0</div>
+                <div class="contador-label">${i}</div>
             `;
-            bucketsContainer.appendChild(bucket);
+            contadorsContainer.appendChild(contador);
         }
     }
 
@@ -211,19 +211,19 @@
         for (let i = 0; i < array.length; i++) {
             const val = array[i];
             const el = document.getElementById(`input-${i}`);
-            const bucket = document.getElementById(`bucket-${val}`);
+            const contador = document.getElementById(`contador-${val}`);
 
             el.classList.add('active');
             await sleep(500);
 
             counts[val]++;
-            bucket.textContent = counts[val];
-            bucket.classList.add('highlight');
+            contador.textContent = counts[val];
+            contador.classList.add('highlight');
 
             await sleep(500);
             el.classList.remove('active');
             el.classList.add('sorted');
-            bucket.classList.remove('highlight');
+            contador.classList.remove('highlight');
         }
 
         await sleep(800);
@@ -231,10 +231,10 @@
         // FASE 2: RECONSTRUCCIÓN
         statusText.textContent = "Fase 2: Reconstruyendo...";
         for (let i = 0; i <= maxVal; i++) {
-            const bucket = document.getElementById(`bucket-${i}`);
+            const contador = document.getElementById(`contador-${i}`);
 
             while (counts[i] > 0) {
-                bucket.classList.add('highlight');
+                contador.classList.add('highlight');
 
                 const outEl = document.createElement('div');
                 outEl.className = 'element active';
@@ -245,12 +245,12 @@
                 outEl.classList.remove('active');
 
                 counts[i]--;
-                bucket.textContent = counts[i];
+                contador.textContent = counts[i];
 
                 await sleep(300);
             }
 
-            bucket.classList.remove('highlight');
+            contador.classList.remove('highlight');
         }
 
         statusText.textContent = "¡Ordenamiento completado!";
