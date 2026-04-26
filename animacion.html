@@ -152,7 +152,7 @@
 
     <label>Velocidad:</label>
     <input type="range" id="speedSlider" min="50" max="1000" step="50" value="500">
-    <span id="speedValue">500 ms</span>
+    <span id="speedValue">Velocidad: 50%</span>
 
     <span id="status-text">Listo</span>
 </div>
@@ -184,15 +184,22 @@ const statusText = document.getElementById('status-text');
 const speedSlider = document.getElementById('speedSlider');
 const speedValue = document.getElementById('speedValue');
 
-let speed = parseInt(speedSlider.value);
+// velocidad invertida desde el inicio
+let speed = 1050 - parseInt(speedSlider.value);
 let paused = false;
 
-// velocidad dinámica
+// texto inicial correcto
+speedValue.textContent = "Velocidad: " + (parseInt(speedSlider.value)/10).toFixed(0) + "%";
+
+// actualizar velocidad
 speedSlider.addEventListener('input', () => {
     let raw = parseInt(speedSlider.value);
-speed = 1050 - raw; // invierte
+    speed = 1050 - raw;
 
-speedValue.textContent = "Velocidad: " + (raw / 10).toFixed(0) + "%";
+    speedValue.textContent =
+        raw < 400 ? "🐢 Lento" :
+        raw < 700 ? "⚖️ Medio" :
+        "⚡ Rápido";
 });
 
 // pausa
@@ -201,7 +208,7 @@ pauseBtn.addEventListener('click', () => {
     pauseBtn.textContent = paused ? "Continuar" : "Pausar";
 });
 
-// sleep inteligente
+// sleep dinámico
 const sleep = () => new Promise(resolve => {
     const check = () => {
         if (!paused) {
