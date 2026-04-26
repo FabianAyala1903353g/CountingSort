@@ -136,6 +136,7 @@
             padding: 1.2rem 2rem;
             border-bottom: 1px solid #e0e0e0;
             flex-shrink: 0;
+<<<<<<< HEAD
             display: block;
         }
 
@@ -157,6 +158,24 @@
 
         .inputs-wrapper {
             max-height: 280px;
+=======
+        }
+
+        .array-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            color: black;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid #7918A1;
+            padding-left: 12px;
+        }
+
+        .inputs-wrapper {
+            max-height: 200px;
+>>>>>>> origin/main
             overflow-y: auto;
             background: #fefefe;
             border: 1px solid black;
@@ -188,7 +207,11 @@
         }
 
         .input-item input {
+<<<<<<< HEAD
             width: 80px;
+=======
+            width: 90px;
+>>>>>>> origin/main
             padding: 0.4rem 0.5rem;
             font-size: 0.85rem;
             border: 1px solid black;
@@ -226,7 +249,11 @@
 
         .sorted-content {
             font-family: 'Courier New', 'Fira Code', monospace;
+<<<<<<< HEAD
             font-size: 0.95rem;
+=======
+            font-size: 1rem;
+>>>>>>> origin/main
             background: white;
             border: 1px solid #ccc;
             padding: 1rem;
@@ -268,6 +295,7 @@
         .inputs-wrapper::-webkit-scrollbar-thumb {
             background: #7918A1;
             border-radius: 0px;
+<<<<<<< HEAD
         }
 
         /* Mensaje inicial */
@@ -279,13 +307,19 @@
             font-size: 0.9rem;
             border: 1px dashed black;
             background: #fafafa;
+=======
+>>>>>>> origin/main
         }
     </style>
 </head>
 <body>
 <div class="header">
     <h1>COUNTING SORT ALGORITHM</h1>
+<<<<<<< HEAD
     <p>Ordenamiento lineal por conteo | Solo enteros positivos (1 a 500)</p>
+=======
+    <p>Ordenamiento lineal por conteo | Solo enteros no negativos</p>
+>>>>>>> origin/main
 </div>
 
 <div class="main-content">
@@ -293,6 +327,7 @@
     <div class="control-panel">
         <div class="control-group">
             <label>CANTIDAD DE ELEMENTOS</label>
+<<<<<<< HEAD
             <input type="number" id="arraySizeInput" min="1" max="100" value="10" step="1">
         </div>
         <div class="control-group">
@@ -304,23 +339,50 @@
             <button id="randomizeBtn" class="btn-outline">VALORES ALEATORIOS</button>
         </div>
         <div class="control-group" id="sortGroup" style="display: none;">
+=======
+            <input type="number" id="arraySizeInput" min="1" max="35" value="7" step="1">
+        </div>
+        <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="createArrayBtn">GENERAR CAMPOS</button>
+        </div>
+        <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="randomizeBtn" class="btn-outline">VALORES ALEATORIOS</button>
+        </div>
+        <div class="control-group">
+>>>>>>> origin/main
             <label>&nbsp;</label>
             <button id="sortBtn">ORDENAR (COUNTING SORT)</button>
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Area editable del arreglo (inicialmente oculta) -->
     <div class="array-section" id="arraySection">
         <div class="array-title">ARREGLO DE ENTEROS (1 a 500)</div>
         <div class="inputs-wrapper">
             <div id="inputsContainer" class="inputs-grid">
                 <div class="initial-message">Configure el tamano y pulse 'GENERAR ARREGLO'</div>
+=======
+    <!-- Area editable del arreglo -->
+    <div class="array-section">
+        <div class="array-title">ARREGLO DE ENTEROS (>=0)</div>
+        <div class="inputs-wrapper">
+            <div id="inputsContainer" class="inputs-grid">
+                <span style="color: #666;">Configure el tamano y pulse 'GENERAR CAMPOS'</span>
+>>>>>>> origin/main
             </div>
         </div>
     </div>
 
+<<<<<<< HEAD
     <!-- Resultados (inicialmente ocultos hasta que haya datos) -->
     <div class="result-section" id="resultSection" style="display: none;">
+=======
+    <!-- Resultados -->
+    <div class="result-section">
+>>>>>>> origin/main
         <div class="result-box">
             <div class="result-header">RESULTADO DEL ORDENAMIENTO</div>
             <div id="sortedDisplay" class="sorted-content">[ sin ordenar ]</div>
@@ -332,22 +394,35 @@
 
 <script>
     // ------------------------------------------------------------------
+<<<<<<< HEAD
     // IMPLEMENTACION DEL ALGORITMO COUNTING SORT (Rango positivo)
+=======
+    // IMPLEMENTACION DEL ALGORITMO COUNTING SORT (Puro, sin modificaciones)
+>>>>>>> origin/main
     // ------------------------------------------------------------------
     function countingSortAlgorithm(arr) {
         if (!Array.isArray(arr)) throw new Error("El arreglo no es valido");
         if (arr.length === 0) return [];
         
+<<<<<<< HEAD
         // Validacion: todos deben ser enteros positivos (>=1) y maximo 500 segun especificacion
+=======
+        // Validacion: todos deben ser enteros no negativos
+>>>>>>> origin/main
         for (let i = 0; i < arr.length; i++) {
             if (!Number.isInteger(arr[i])) {
                 throw new Error(`Elemento '${arr[i]}' no es un entero.`);
             }
+<<<<<<< HEAD
             if (arr[i] < 1) {
                 throw new Error(`Counting Sort requiere valores >= 1. Valor invalido: ${arr[i]}`);
             }
             if (arr[i] > 500) {
                 throw new Error(`Valor maximo permitido es 500. Valor encontrado: ${arr[i]}`);
+=======
+            if (arr[i] < 0) {
+                throw new Error(`Counting Sort requiere valores >= 0. Elemento negativo: ${arr[i]}`);
+>>>>>>> origin/main
             }
         }
         
@@ -367,7 +442,11 @@
         
         // 4) Reconstruir el arreglo ordenado
         let sortedResult = [];
+<<<<<<< HEAD
         for (let value = 1; value <= maxValue; value++) {
+=======
+        for (let value = 0; value <= maxValue; value++) {
+>>>>>>> origin/main
             while (countArray[value] > 0) {
                 sortedResult.push(value);
                 countArray[value]--;
@@ -377,7 +456,11 @@
     }
     
     // ------------------------------------------------------------------
+<<<<<<< HEAD
     // MANEJO DEL DOM Y LAS INTERACCIONES
+=======
+    // MANEJO DEL DOM Y LAS INTERACCIONES (sin emojis, sin redondeos)
+>>>>>>> origin/main
     // ------------------------------------------------------------------
     const sizeInput = document.getElementById('arraySizeInput');
     const createBtn = document.getElementById('createArrayBtn');
@@ -401,18 +484,30 @@
     function showError(message) {
         errorMsgDiv.textContent = message;
         errorMsgDiv.style.display = 'block';
+<<<<<<< HEAD
+=======
+        // auto-ocultar despues de 4 segundos
+>>>>>>> origin/main
         setTimeout(() => {
             if (errorMsgDiv.textContent === message) {
                 errorMsgDiv.style.display = 'none';
             }
+<<<<<<< HEAD
         }, 4500);
+=======
+        }, 4000);
+>>>>>>> origin/main
     }
     
     // Obtener el arreglo actual desde los inputs numericos
     function getCurrentArrayFromInputs() {
         const inputElements = document.querySelectorAll('.array-elem-input');
         if (inputElements.length === 0) {
+<<<<<<< HEAD
             return { error: true, message: "No hay campos definidos. Presione 'GENERAR ARREGLO' primero." };
+=======
+            return { error: true, message: "No hay campos definidos. Presione 'GENERAR CAMPOS' primero." };
+>>>>>>> origin/main
         }
         
         const values = [];
@@ -428,11 +523,16 @@
             if (!Number.isInteger(num)) {
                 return { error: true, message: `El numero ${num} debe ser entero.` };
             }
+<<<<<<< HEAD
             if (num < 1) {
                 return { error: true, message: `Valor invalido: ${num}. Los numeros deben ser desde 1 hasta 500.` };
             }
             if (num > 500) {
                 return { error: true, message: `Valor ${num} excede el maximo permitido (500).` };
+=======
+            if (num < 0) {
+                return { error: true, message: `Valor negativo: ${num}. Counting Sort solo acepta >=0` };
+>>>>>>> origin/main
             }
             values.push(num);
         }
@@ -446,7 +546,11 @@
         if (result.error) {
             showError(result.message);
             sortedDisplaySpan.innerHTML = "[ error en datos ]";
+<<<<<<< HEAD
             infoStatsSpan.innerHTML = "Corrija los valores e intente nuevamente. Rango permitido: 1 a 500";
+=======
+            infoStatsSpan.innerHTML = "Corrija los valores e intente nuevamente.";
+>>>>>>> origin/main
             return;
         }
         
@@ -461,6 +565,7 @@
             const sortedArray = countingSortAlgorithm(originalArray);
             const maxOriginal = Math.max(...originalArray);
             const minOriginal = Math.min(...originalArray);
+<<<<<<< HEAD
             const originalStr = originalArray.join(", ");
             const sortedStr = sortedArray.join(", ");
             sortedDisplaySpan.innerHTML = `ORIGINAL: [ ${originalStr} ]<br>ORDENADO: [ ${sortedStr} ]`;
@@ -478,6 +583,26 @@
         let maxAllowed = 100;
         if (size > maxAllowed) {
             showError(`Maximo permitido: ${maxAllowed} elementos.`);
+=======
+            // mostrar representacion clara
+            const originalStr = originalArray.join(", ");
+            const sortedStr = sortedArray.join(", ");
+            sortedDisplaySpan.innerHTML = `ORIGINAL: [ ${originalStr} ]<br>ORDENADO: [ ${sortedStr} ]`;
+            infoStatsSpan.innerHTML = `Rango maximo: ${maxOriginal} | Minimo: ${minOriginal} | Total elementos: ${originalArray.length} | Tamaño conteo: ${maxOriginal+1}`;
+        } catch (err) {
+            showError(err.message);
+            sortedDisplaySpan.innerHTML = "[ error en ordenamiento ]";
+            infoStatsSpan.innerHTML = "Verifique que todos los valores sean enteros no negativos.";
+        }
+    }
+    
+    // Generar los campos input segun el tamaño actual (sin redondeos)
+    function generateInputFields(size, fillWithRandom = true) {
+        if (!size || size < 1) size = 1;
+        let maxAllowed = 38;
+        if (size > maxAllowed) {
+            showError(`Maximo permitido: ${maxAllowed} elementos por rendimiento visual.`);
+>>>>>>> origin/main
             size = maxAllowed;
             sizeInput.value = maxAllowed;
         }
@@ -491,6 +616,7 @@
             const inputElem = document.createElement('input');
             inputElem.type = 'number';
             inputElem.step = '1';
+<<<<<<< HEAD
             inputElem.min = '1';
             inputElem.max = '500';
             
@@ -498,6 +624,13 @@
             if (fillWithRandom) {
                 // valores aleatorios entre 1 y 500
                 defaultValue = Math.floor(Math.random() * 500) + 1;
+=======
+            inputElem.min = '0';
+            // valor por defecto: si fillWithRandom true -> aleatorio 0-99, si no 0
+            let defaultValue = 0;
+            if (fillWithRandom) {
+                defaultValue = Math.floor(Math.random() * 100);
+>>>>>>> origin/main
             }
             inputElem.value = defaultValue;
             inputElem.className = 'array-elem-input';
@@ -505,6 +638,7 @@
             wrapper.appendChild(inputElem);
             inputsContainer.appendChild(wrapper);
         }
+<<<<<<< HEAD
         
         // Mostrar secciones
         arraySection.style.display = 'block';
@@ -513,10 +647,15 @@
         sortGroup.style.display = 'flex';
         
         infoStatsSpan.innerHTML = `Arreglo generado: ${size} elementos (rango 1-500). Puede editar o usar aleatorios.`;
+=======
+        // Mostrar en infoStats feedback
+        infoStatsSpan.innerHTML = `Campos generados: ${size} elementos. Edite o use aleatorios.`;
+>>>>>>> origin/main
         sortedDisplaySpan.innerHTML = "[ sin ordenar ]";
         hideError();
     }
     
+<<<<<<< HEAD
     // Llenar todos los inputs actuales con valores aleatorios (1 a 500)
     function fillWithRandomValues() {
         const inputs = document.querySelectorAll('.array-elem-input');
@@ -531,6 +670,22 @@
         hideError();
         sortedDisplaySpan.innerHTML = "[ valores aleatorios asignados, presione ORDENAR ]";
         infoStatsSpan.innerHTML = `Nuevos valores aleatorios (1-500). Total elementos: ${inputs.length}`;
+=======
+    // Llenar todos los inputs actuales con valores aleatorios (0 a 99)
+    function fillWithRandomValues() {
+        const inputs = document.querySelectorAll('.array-elem-input');
+        if (inputs.length === 0) {
+            showError("Primero genere los campos (Boton GENERAR CAMPOS)");
+            return false;
+        }
+        for (let inp of inputs) {
+            let randomVal = Math.floor(Math.random() * 100);
+            inp.value = randomVal;
+        }
+        hideError();
+        sortedDisplaySpan.innerHTML = "[ se aplicaron valores aleatorios, presione ORDENAR ]";
+        infoStatsSpan.innerHTML = `Valores aleatorios asignados (0-99). Total elementos: ${inputs.length}`;
+>>>>>>> origin/main
         return true;
     }
     
@@ -538,6 +693,7 @@
     createBtn.addEventListener('click', () => {
         let newSize = parseInt(sizeInput.value, 10);
         if (isNaN(newSize) || newSize < 1) {
+<<<<<<< HEAD
             showError("Cantidad invalida. Debe ser un numero entre 1 y 100.");
             newSize = 5;
             sizeInput.value = 5;
@@ -548,6 +704,13 @@
             sizeInput.value = 100;
         }
         generateInputFields(newSize, true);
+=======
+            showError("Cantidad invalida. Debe ser un numero mayor a 0.");
+            newSize = 5;
+            sizeInput.value = 5;
+        }
+        generateInputFields(newSize, true);   // true -> rellena con aleatorios agradables
+>>>>>>> origin/main
     });
     
     randomizeBtn.addEventListener('click', () => {
@@ -558,6 +721,7 @@
         updateSortedDisplay();
     });
     
+<<<<<<< HEAD
     // Inicializacion: mostrar solo el panel de cantidad y boton generar
     function init() {
         // Ocultar secciones al inicio
@@ -577,6 +741,19 @@
     }
     
     // Si se presiona Enter en tamaño, generar arreglo
+=======
+    // Inicializar por defecto: 7 elementos con valores aleatorios.
+    function init() {
+        const defaultSize = 7;
+        sizeInput.value = defaultSize;
+        generateInputFields(defaultSize, true);
+        // opcional: mostrar mensaje de bienvenida
+        infoStatsSpan.innerHTML = `Listo. Arreglo inicial de ${defaultSize} elementos aleatorios (0-99).`;
+        sortedDisplaySpan.innerHTML = "[ esperando ordenar ]";
+    }
+    
+    // Si se presiona Enter en tamaño, regenerar campos
+>>>>>>> origin/main
     sizeInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
