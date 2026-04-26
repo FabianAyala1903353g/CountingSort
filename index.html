@@ -2,220 +2,618 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Counting Sort en C</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Counting Sort: Demo interactivo + código en C</title>
     <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Fira Code', monospace, 'Roboto', sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        pre {
-            background: #222;
-            color: #0f0;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .interactive-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        .input-group {
+            background: linear-gradient(145deg, #f0f4fa 0%, #e6edf4 100%);
+            margin: 0;
+            padding: 2rem 1.5rem;
             display: flex;
-            gap: 10px;
+            justify-content: center;
             align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(1px);
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* Header */
+        .hero {
+            background: #0b2b3b;
+            padding: 1.5rem 2rem;
+            color: white;
+        }
+        .hero h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.9rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-top: 10px;
         }
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #ccc;
-            border-radius: 6px;
-            min-width: 200px;
+        .hero h1 small {
+            font-size: 0.85rem;
+            font-weight: 400;
+            background: #2c5f7a;
+            padding: 0.2rem 0.7rem;
+            border-radius: 40px;
         }
-        input[type="text"]:focus {
+        .hero p {
+            margin: 0.5rem 0 0;
+            opacity: 0.85;
+            font-size: 1rem;
+        }
+
+        /* Two column layout */
+        .columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            padding: 2rem;
+        }
+
+        .demo-panel {
+            flex: 2;
+            min-width: 280px;
+            background: white;
+            border-radius: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            transition: 0.2s;
+        }
+
+        .c-code-panel {
+            flex: 1.4;
+            min-width: 320px;
+            background: #1e1f2c;
+            border-radius: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            padding: 1.2rem;
+            color: #f0f0f0;
+        }
+
+        /* form controls */
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1.2rem;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .field label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #2c5f7a;
+        }
+        input, button {
+            border-radius: 60px;
+            border: 1px solid #cbd5e1;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            background: white;
+            transition: 0.2s;
+        }
+        input:focus {
             outline: none;
-            border-color: #4a90d9;
+            border-color: #0f6b8c;
+            box-shadow: 0 0 0 2px rgba(15,107,140,0.2);
         }
         button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #4a90d9;
+            background: #2c3e50;
             color: white;
+            font-weight: 600;
             border: none;
-            border-radius: 6px;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.5rem 1.2rem;
         }
         button:hover {
-            background-color: #357abd;
+            background: #1f4e6e;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
         }
-        .result {
-            margin-top: 15px;
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-size: 16px;
+        button:active {
+            transform: translateY(1px);
         }
-        .result.success {
-            background-color: #e8f5e9;
-            border-left: 4px solid #4caf50;
-            color: #2e7d32;
+        .btn-random {
+            background: #2b6e4e;
         }
-        .result.error {
-            background-color: #fdecea;
-            border-left: 4px solid #e53935;
-            color: #b71c1c;
+        .btn-random:hover {
+            background: #1e5940;
         }
-        .hidden {
-            display: none;
+        .btn-sort {
+            background: #1f6392;
+        }
+        .btn-sort:hover {
+            background: #0e4a6e;
+        }
+        .array-inputs {
+            background: #f9fafc;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin: 1rem 0 1.2rem;
+            border: 1px solid #e4edf2;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .inputs-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .input-item {
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 4px 12px 4px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #dce5ec;
+        }
+        .input-item span {
+            font-weight: 600;
+            color: #1f6392;
+            font-size: 0.8rem;
+        }
+        .input-item input {
+            width: 80px;
+            border-radius: 30px;
+            text-align: center;
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #cbd5e6;
+        }
+        .result-area {
+            background: #eef3fa;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            margin-top: 1rem;
+        }
+        .result-area h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            color: #0b2b3b;
+        }
+        .sorted-value {
+            font-family: 'Fira Code', monospace;
+            word-break: break-all;
+            background: #0b2b3b;
+            color: #bbe1f0;
+            padding: 0.7rem;
+            border-radius: 1rem;
+            font-size: 1rem;
+        }
+        .error-msg {
+            color: #c0392b;
+            background: #ffe6e5;
+            padding: 0.5rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+        hr {
+            margin: 1rem 0;
+            border-color: #e2edf2;
+        }
+        /* código C */
+        .code-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid #4a4f62;
+            padding-bottom: 6px;
+        }
+        .code-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        pre {
+            background: #0f111a;
+            padding: 1rem;
+            border-radius: 1.2rem;
+            overflow-x: auto;
+            font-size: 0.8rem;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            line-height: 1.4;
+            color: #d4f1f9;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        code {
+            font-family: inherit;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 1rem;
+            opacity: 0.7;
+        }
+        @media (max-width: 780px) {
+            body { padding: 1rem; }
+            .columns { padding: 1rem; }
+            .input-item input { width: 65px; }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>Algoritmo Counting Sort</h1>
-
-    <div class="interactive-section">
-        <h2>Prueba el algoritmo</h2>
-        <p>Ingresa los números separados por comas (enteros no negativos) y presiona <strong>Ordenar</strong>:</p>
-        <div class="input-group">
-            <input type="text" id="arrayInput" placeholder="Ej: 4, 2, 2, 8, 3, 3, 1" />
-            <button onclick="ejecutarCountingSort()">Ordenar</button>
-        </div>
-        <div id="resultado" class="result hidden"></div>
+<div class="main-container">
+    <div class="hero">
+        <h1>
+            📊 Counting Sort 
+            <small>O(n + k) · estable · solo enteros ≥ 0</small>
+        </h1>
+        <p>Ingrese tamaño del arreglo, valores manuales o genere aleatorios. El ordenamiento se realiza con <strong>Counting Sort</strong> puro.</p>
     </div>
 
-    <h2>Implementación en C</h2>
-    <p>Este es el algoritmo Counting Sort implementado en lenguaje C:</p>
+    <div class="columns">
+        <!-- PANEL INTERACTIVO (HTML/JS) -->
+        <div class="demo-panel">
+            <div class="control-group">
+                <div class="field">
+                    <label>📌 Cantidad de elementos</label>
+                    <input type="number" id="arraySizeInput" min="1" max="30" value="6" step="1">
+                </div>
+                <div class="field">
+                    <label>🛠️ Acción</label>
+                    <button id="createArrayBtn">✏️ Generar campos</button>
+                </div>
+                <div class="field">
+                    <label>🎲 Aleatorizar</label>
+                    <button id="randomizeBtn" class="btn-random">🎲 Valores aleatorios</button>
+                </div>
+                <div class="field">
+                    <label>⚡ Ordenar</label>
+                    <button id="sortBtn" class="btn-sort">📈 Counting Sort</button>
+                </div>
+            </div>
 
-    <pre>
+            <div class="array-inputs">
+                <div style="font-size: 0.8rem; margin-bottom: 10px; font-weight: 500;">✏️ Arreglo (enteros ≥ 0):</div>
+                <div id="inputsContainer" class="inputs-grid">
+                    <!-- Aquí se generan dinámicamente los inputs -->
+                    <span style="color: #7f8c8d;">Configure el tamaño y pulse "Generar campos"</span>
+                </div>
+            </div>
+
+            <div class="result-area" id="resultArea">
+                <h3>📦 Resultado del ordenamiento</h3>
+                <div id="sortedDisplay" class="sorted-value">— aún no ordenado —</div>
+                <div id="errorMsg" class="error-msg" style="display: none;"></div>
+                <div id="infoRange" style="font-size:0.75rem; margin-top: 8px; color:#406e8e;"></div>
+            </div>
+            <div class="footer-note">
+                💡 Counting Sort solo funciona con números enteros no negativos. Si ingresa negativos se mostrará error.
+            </div>
+        </div>
+
+        <!-- PANEL CÓDIGO EN C -->
+        <div class="c-code-panel">
+            <div class="code-header">
+                <h3>⚙️ Implementación en C</h3>
+                <span style="font-size:0.7rem;">algoritmo clásico</span>
+            </div>
+            <pre><code>// Counting Sort en C (enteros no negativos)
 #include &lt;stdio.h&gt;
-
-int encontrarMax(int arr[], int n) {
-    int max = arr[0];
-    for(int i = 1; i &lt; n; i++) {
-        if(arr[i] &gt; max)
-            max = arr[i];
-    }
-    return max;
-}
+#include &lt;stdlib.h&gt;
+#include &lt;limits.h&gt;
 
 void countingSort(int arr[], int n) {
-    int max = encontrarMax(arr, n);
-    int count[max + 1];
-
-    for(int i = 0; i &lt;= max; i++) {
-        count[i] = 0;
-    }
-
-    for(int i = 0; i &lt; n; i++) {
+    if (n <= 0) return;
+    
+    // 1. Encontrar el valor máximo
+    int max = arr[0];
+    for (int i = 1; i < n; i++)
+        if (arr[i] > max) max = arr[i];
+    
+    // 2. Crear arreglo de conteo
+    int *count = (int*)calloc(max + 1, sizeof(int));
+    
+    // 3. Contar ocurrencias
+    for (int i = 0; i < n; i++)
         count[arr[i]]++;
-    }
-
+    
+    // 4. Reconstruir arreglo ordenado
     int index = 0;
-    for(int i = 0; i &lt;= max; i++) {
-        while(count[i] &gt; 0) {
-            arr[index] = i;
-            index++;
-            count[i]--;
+    for (int i = 0; i <= max; i++) {
+        while (count[i]--) {
+            arr[index++] = i;
         }
     }
+    free(count);
 }
 
+// Ejemplo de uso interactivo
 int main() {
-    int arr[] = {4, 2, 2, 8, 3, 3, 1};
-    int n = sizeof(arr) / sizeof(arr[0]);
-
+    int n;
+    printf("Cantidad de elementos: ");
+    scanf("%d", &n);
+    
+    int *arr = (int*)malloc(n * sizeof(int));
+    printf("Ingrese %d enteros no negativos:\n", n);
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+    
     countingSort(arr, n);
-
-    for(int i = 0; i &lt; n; i++) {
+    
+    printf("Arreglo ordenado: ");
+    for (int i = 0; i < n; i++)
         printf("%d ", arr[i]);
-    }
-
+    printf("\n");
+    
+    free(arr);
     return 0;
-}
-    </pre>
+}</code></pre>
+            <div style="margin-top: 12px; font-size:0.75rem; background:#2d2f3a; padding: 6px 12px; border-radius: 20px;">
+                ✅ Complejidad temporal O(n + k), memoria O(k). Ideal para rangos acotados.
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    function ejecutarCountingSort() {
-        var input = document.getElementById('arrayInput').value.trim();
-        var resultDiv = document.getElementById('resultado');
-
-        if (!input) {
-            mostrarError('Por favor ingresa al menos un número.');
-            return;
-        }
-
-        var partes = input.split(',');
-        var arr = [];
-        for (var i = 0; i < partes.length; i++) {
-            var num = parseInt(partes[i].trim(), 10);
-            if (isNaN(num) || num < 0) {
-                mostrarError('Solo se permiten enteros no negativos separados por comas.');
-                return;
-            }
-            arr.push(num);
-        }
-
-        var original = arr.slice();
-        countingSort(arr);
-
-        resultDiv.className = 'result success';
-        resultDiv.innerHTML =
-            '<strong>Arreglo original:</strong> [' + original.join(', ') + ']<br>' +
-            '<strong>Arreglo ordenado:</strong> [' + arr.join(', ') + ']';
-        resultDiv.classList.remove('hidden');
-    }
-
+    // ---------- LÓGICA DEL ALGORITMO COUNTING SORT (JavaScript) ----------
+    /**
+     * countingSort: recibe un array de enteros NO NEGATIVOS
+     * retorna un nuevo array ordenado de menor a mayor
+     * Lanza error si hay valores negativos o no enteros
+     */
     function countingSort(arr) {
-        if (arr.length === 0) return;
-
-        var max = arr[0];
-        for (var i = 1; i < arr.length; i++) {
-            if (arr[i] > max) max = arr[i];
+        if (!Array.isArray(arr)) throw new Error("Formato inválido");
+        if (arr.length === 0) return [];
+        
+        // Validación de enteros no negativos
+        for (let i = 0; i < arr.length; i++) {
+            if (!Number.isInteger(arr[i])) throw new Error(`El valor ${arr[i]} no es un entero`);
+            if (arr[i] < 0) throw new Error(`Counting Sort requiere valores ≥ 0. Valor negativo: ${arr[i]}`);
         }
 
-        var count = new Array(max + 1).fill(0);
-        for (var i = 0; i < arr.length; i++) {
+        // 1. Obtener el valor máximo
+        let maxVal = Math.max(...arr);
+        
+        // 2. Arreglo de frecuencias (tamaño maxVal+1)
+        let count = new Array(maxVal + 1).fill(0);
+        
+        // 3. Conteo
+        for (let i = 0; i < arr.length; i++) {
             count[arr[i]]++;
         }
-
-        var index = 0;
-        for (var i = 0; i <= max; i++) {
+        
+        // 4. Reconstrucción ordenada
+        let sorted = [];
+        for (let i = 0; i <= maxVal; i++) {
             while (count[i] > 0) {
-                arr[index] = i;
-                index++;
+                sorted.push(i);
                 count[i]--;
             }
         }
+        return sorted;
     }
-
-    function mostrarError(mensaje) {
-        var resultDiv = document.getElementById('resultado');
-        resultDiv.className = 'result error';
-        resultDiv.textContent = mensaje;
-        resultDiv.classList.remove('hidden');
+    
+    // ---------- MANEJO DEL DOM Y UI ----------
+    // Referencias
+    const sizeInput = document.getElementById('arraySizeInput');
+    const createBtn = document.getElementById('createArrayBtn');
+    const randomizeBtn = document.getElementById('randomizeBtn');
+    const sortBtn = document.getElementById('sortBtn');
+    const inputsContainer = document.getElementById('inputsContainer');
+    const sortedDisplay = document.getElementById('sortedDisplay');
+    const errorMsgDiv = document.getElementById('errorMsg');
+    const infoRangeSpan = document.getElementById('infoRange');
+    
+    // Obtener inputs actuales (como array de números)
+    function getCurrentArray() {
+        const inputElements = document.querySelectorAll('.array-elem-input');
+        const values = [];
+        for (let inp of inputElements) {
+            let rawValue = inp.value.trim();
+            if (rawValue === "") {
+                return { error: true, message: "Hay campos vacíos. Complete todos los valores." };
+            }
+            let num = Number(rawValue);
+            if (isNaN(num)) {
+                return { error: true, message: `"${rawValue}" no es un número válido.` };
+            }
+            if (!Number.isInteger(num)) {
+                return { error: true, message: `"${num}" debe ser un entero.` };
+            }
+            if (num < 0) {
+                return { error: true, message: `El número ${num} es negativo. Counting Sort solo soporta ≥ 0.` };
+            }
+            values.push(num);
+        }
+        return { error: false, array: values };
     }
-
-    document.getElementById('arrayInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') ejecutarCountingSort();
+    
+    // Mostrar error en la UI
+    function showError(message) {
+        errorMsgDiv.textContent = message;
+        errorMsgDiv.style.display = 'block';
+        setTimeout(() => {
+            if (errorMsgDiv.style.display === 'block') {
+                // se oculta después de 3.5 segundos si no se repite
+                setTimeout(() => {
+                    if (errorMsgDiv.textContent === message) 
+                        errorMsgDiv.style.display = 'none';
+                }, 3200);
+            }
+        }, 100);
+    }
+    
+    function clearError() {
+        errorMsgDiv.style.display = 'none';
+        errorMsgDiv.textContent = '';
+    }
+    
+    // Generar campos dinámicos según tamaño actual (sin rellenar automáticamente con ceros)
+    function generateInputFields(size, fillWithRandom = true) {
+        if (!size || size < 1) size = 1;
+        if (size > 40) size = 40; // seguridad visual
+        
+        inputsContainer.innerHTML = '';
+        for (let i = 0; i < size; i++) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'input-item';
+            const labelSpan = document.createElement('span');
+            labelSpan.textContent = `${i+1}`;
+            const inputElem = document.createElement('input');
+            inputElem.type = 'number';
+            inputElem.step = '1';
+            inputElem.min = '0';
+            inputElem.value = fillWithRandom ? Math.floor(Math.random() * 100) : '0';
+            inputElem.className = 'array-elem-input';
+            // atributo placeholder
+            inputElem.setAttribute('aria-label', `elemento ${i+1}`);
+            wrapper.appendChild(labelSpan);
+            wrapper.appendChild(inputElem);
+            inputsContainer.appendChild(wrapper);
+        }
+        // si no se debe rellenar aleatorio pero se pide generación limpia: mejor dejar valores 0? 
+        // Por UX usamos aleatorio por defecto (a gusto del usuario), el botón random hará lo mismo.
+        if (!fillWithRandom) {
+            const allInputs = document.querySelectorAll('.array-elem-input');
+            for (let inp of allInputs) inp.value = '0';
+        }
+        // mostrar información de rango sugerido
+        infoRangeSpan.innerHTML = `✅ Rango sugerido: 0 - 99 (aleatorios) · total elementos: ${size}`;
+    }
+    
+    // Llenar todos los campos actuales con números aleatorios (0-99)
+    function fillCurrentWithRandom() {
+        const inputs = document.querySelectorAll('.array-elem-input');
+        if (inputs.length === 0) {
+            showError("Primero genera los campos usando el botón 'Generar campos'");
+            return false;
+        }
+        for (let inp of inputs) {
+            const randomVal = Math.floor(Math.random() * 100); // 0..99
+            inp.value = randomVal;
+        }
+        clearError();
+        // después de llenar aleatorios, limpiamos resultado anterior
+        sortedDisplay.innerHTML = '— nuevo arreglo, presiona ordenar —';
+        return true;
+    }
+    
+    // Acción de ordenamiento principal
+    function performSort() {
+        clearError();
+        const inputsCount = document.querySelectorAll('.array-elem-input').length;
+        if (inputsCount === 0) {
+            showError("No hay elementos definidos. Use 'Generar campos' primero.");
+            return;
+        }
+        
+        const result = getCurrentArray();
+        if (result.error) {
+            showError(result.message);
+            return;
+        }
+        
+        const originalArr = result.array;
+        if (originalArr.length === 0) {
+            sortedDisplay.innerHTML = '[] (arreglo vacío)';
+            return;
+        }
+        
+        try {
+            const sortedArray = countingSort(originalArr);
+            // Mostrar resultado bonito
+            const originalStr = originalArr.join(', ');
+            const sortedStr = sortedArray.join(', ');
+            sortedDisplay.innerHTML = `📊 Original: [${originalStr}]<br>✅ Ordenado: [${sortedStr}]`;
+            // Mostrar datos adicionales: max, rango (opcional)
+            const maxVal = Math.max(...originalArr);
+            infoRangeSpan.innerHTML = `📐 Máximo valor: ${maxVal} · Tamaño conteo: ${maxVal+1} · Elementos: ${originalArr.length}`;
+        } catch (err) {
+            showError(err.message);
+            sortedDisplay.innerHTML = '— error en ordenamiento —';
+        }
+    }
+    
+    // Eventos y sincronización
+    createBtn.addEventListener('click', () => {
+        let newSize = parseInt(sizeInput.value, 10);
+        if (isNaN(newSize) || newSize < 1) {
+            showError("Cantidad inválida, debe ser al menos 1.");
+            newSize = 1;
+            sizeInput.value = 1;
+        }
+        if (newSize > 40) {
+            showError("Máximo 40 elementos por claridad visual.");
+            newSize = 40;
+            sizeInput.value = 40;
+        }
+        generateInputFields(newSize, true);   // true para llenar con valores aleatorios como experiencia
+        clearError();
+        sortedDisplay.innerHTML = '— nuevo arreglo, puedes editar o usar aleatorio —';
+        infoRangeSpan.innerHTML = `🎲 Nueva configuración · ${newSize} elementos.`;
     });
+    
+    randomizeBtn.addEventListener('click', () => {
+        const success = fillCurrentWithRandom();
+        if (success) {
+            // limpiar mensaje de resultado, no auto ordenar
+            sortedDisplay.innerHTML = '🎲 Valores aleatorios aplicados. Presiona "Counting Sort" para ordenar.';
+            clearError();
+        }
+    });
+    
+    sortBtn.addEventListener('click', () => {
+        performSort();
+    });
+    
+    // Inicializar página por defecto: cargar con tamaño 6 y valores aleatorios
+    function init() {
+        const defaultSize = 6;
+        sizeInput.value = defaultSize;
+        generateInputFields(defaultSize, true);   // campos con valores aleatorios 0-99
+        sortedDisplay.innerHTML = '— esperando ordenar —';
+        clearError();
+        infoRangeSpan.innerHTML = `✨ Arreglo inicial con ${defaultSize} elementos aleatorios.✨`;
+    }
+    
+    // Si se presiona enter en el campo tamaño, se puede regenerar? no necesario pero intuitivo
+    sizeInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            createBtn.click();
+        }
+    });
+    
+    // Evento opcional: validación en tiempo real en inputs para que no tengan valores no numéricos,
+    // pero ya se valida en getCurrentArray, mejor dejarlo suave.
+    init();
 </script>
-
 </body>
 </html>
