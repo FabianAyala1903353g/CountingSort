@@ -405,8 +405,6 @@
     const errorMsgDiv = document.getElementById('errorMsg');
     const infoStatsSpan = document.getElementById('infoStats');
     
-    let isSorted = false;  // Bandera para saber si ya se ordeno
-    
     function hideError() {
         errorMsgDiv.style.display = 'none';
         errorMsgDiv.textContent = '';
@@ -453,6 +451,7 @@
         return { error: false, array: values };
     }
     
+    // Esta funcion SOLO se ejecuta cuando se presiona ORDENAR
     function updateSortedDisplay() {
         hideError();
         const result = getCurrentArrayFromInputs();
@@ -460,7 +459,7 @@
             showError(result.message);
             sortedDisplaySpan.innerHTML = "[ error en datos ]";
             infoStatsSpan.innerHTML = "Corrija los valores.";
-            isSorted = false;
+            // Ocultar boton de animacion si hay error
             animationContainer.style.display = 'none';
             return;
         }
@@ -468,7 +467,6 @@
         const originalArray = result.array;
         if (originalArray.length === 0) {
             sortedDisplaySpan.innerHTML = "[ arreglo vacio ]";
-            isSorted = false;
             animationContainer.style.display = 'none';
             return;
         }
@@ -483,13 +481,11 @@
             const tieneRepetidos = new Set(originalArray).size !== originalArray.length;
             infoStatsSpan.innerHTML = `Min: ${minOriginal} | Max: ${maxOriginal} | Elementos: ${originalArray.length} | Unicos: ${tieneRepetidos ? 'NO' : 'SI'}`;
             
-            // IMPORTANTE: Marcar que ya se ordeno y mostrar el boton de animacion
-            isSorted = true;
+            // SOLO AQUI: despues de ordenar exitosamente, MOSTRAMOS el boton de animacion
             animationContainer.style.display = 'flex';
         } catch (err) {
             showError(err.message);
             sortedDisplaySpan.innerHTML = "[ error en ordenamiento ]";
-            isSorted = false;
             animationContainer.style.display = 'none';
         }
     }
@@ -532,8 +528,8 @@
         
         infoStatsSpan.innerHTML = `Arreglo generado: ${finalSize} elementos | UNICOS: SI (sin repeticiones)`;
         sortedDisplaySpan.innerHTML = "[ sin ordenar ]";
-        isSorted = false;
-        animationContainer.style.display = 'none';  // Ocultar boton hasta ordenar
+        // IMPORTANTE: Ocultar boton de animacion al generar nuevo arreglo
+        animationContainer.style.display = 'none';
         hideError();
     }
     
@@ -552,8 +548,8 @@
             hideError();
             sortedDisplaySpan.innerHTML = "[ nuevos valores unicos asignados, presione ORDENAR ]";
             infoStatsSpan.innerHTML = `Nuevos valores UNICOS (sin repeticiones). Total: ${size}`;
-            isSorted = false;
-            animationContainer.style.display = 'none';  // Ocultar boton hasta ordenar
+            // Ocultar boton de animacion al cambiar valores aleatorios
+            animationContainer.style.display = 'none';
             return true;
         } catch (err) {
             showError(err.message);
@@ -561,7 +557,7 @@
         }
     }
     
-    // REDIRECCION A animacion.html (con el arreglo actual)
+    // REDIRECCION CORRECTA a animacion.html
     function redirectToAnimation() {
         const result = getCurrentArrayFromInputs();
         if (result.error) {
@@ -569,9 +565,11 @@
             return;
         }
         const currentArray = result.array;
-        // Codificar el arreglo como JSON y pasarlo en la URL
+        // Codificar el arreglo como JSON
         const encodedArray = encodeURIComponent(JSON.stringify(currentArray));
         const animationUrl = `https://fabianayala1903353g.github.io/CountingSort/animacion.html?arr=${encodedArray}`;
+        
+        // Abrir en nueva pestaña
         window.open(animationUrl, '_blank');
     }
     
