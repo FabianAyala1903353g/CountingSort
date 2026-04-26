@@ -29,7 +29,6 @@
             margin-bottom: 30px;
         }
 
-        /* Arreglos */
         .array-container {
             display: flex;
             gap: 10px;
@@ -65,7 +64,6 @@
             background: #e0e0e0;
         }
 
-        /* GRID DE CONTADORES (SIN SCROLL) */
         .contadors-wrapper {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
@@ -106,12 +104,12 @@
             color: var(--primary);
         }
 
-        /* Controles */
         .controls {
             margin-bottom: 20px;
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         button {
@@ -145,119 +143,146 @@
 </head>
 <body>
 
-    <h2>Visualización paso a paso: Counting Sort</h2>
+<h2>Visualización paso a paso: Counting Sort</h2>
 
-    <div class="controls">
-        <button id="startBtn">Iniciar Animación</button>
-        <button onclick="window.location.reload()">Reiniciar</button>
-        <span id="status-text">Listo para comenzar</span>
-        <label style="font-size:0.8rem;">Velocidad:</label>
-        <input type="range" id="speedSlider" min="50" max="1000" step="50" value="500">
-        <span id="speedValue">500 ms</span>
-    </div>
+<div class="controls">
+    <button id="startBtn">Iniciar</button>
+    <button id="pauseBtn">Pausar</button>
+    <button onclick="window.location.reload()">Reiniciar</button>
 
-    <div class="label-tag">ARREGLO ORIGINAL:</div>
-    <div id="input-array" class="array-container"></div>
+    <label>Velocidad:</label>
+    <input type="range" id="speedSlider" min="50" max="1000" step="50" value="500">
+    <span id="speedValue">500 ms</span>
 
-    <div class="label-tag">CONTADOR:</div>
-    <div id="contadors-container" class="contadors-wrapper"></div>
+    <span id="status-text">Listo</span>
+</div>
 
-    <div class="label-tag">ARREGLO ORDENADO:</div>
-    <div id="output-array" class="array-container"></div>
+<div class="label-tag">ARREGLO ORIGINAL:</div>
+<div id="input-array" class="array-container"></div>
+
+<div class="label-tag">CONTADOR:</div>
+<div id="contadors-container" class="contadors-wrapper"></div>
+
+<div class="label-tag">ARREGLO ORDENADO:</div>
+<div id="output-array" class="array-container"></div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const dataRaw = urlParams.get('arr');
-    let array = dataRaw ? JSON.parse(decodeURIComponent(dataRaw)) : [5, 2, 8, 2, 1, 0];
+const urlParams = new URLSearchParams(window.location.search);
+const dataRaw = urlParams.get('arr');
+let array = dataRaw ? JSON.parse(decodeURIComponent(dataRaw)) : [5,2,8,2,1,0];
 
-    const maxVal = Math.max(...array);
+const maxVal = Math.max(...array);
 
-    const inputContainer = document.getElementById('input-array');
-    const contadorsContainer = document.getElementById('contadors-container');
-    const outputContainer = document.getElementById('output-array');
-    const statusText = document.getElementById('status-text');
-    const startBtn = document.getElementById('startBtn');
+const inputContainer = document.getElementById('input-array');
+const contadorsContainer = document.getElementById('contadors-container');
+const outputContainer = document.getElementById('output-array');
 
-    function init() {
-        // Arreglo original
-        array.forEach((val, i) => {
-            const div = document.createElement('div');
-            div.className = 'element';
-            div.textContent = val;
-            div.id = `input-${i}`;
-            inputContainer.appendChild(div);
-        });
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const statusText = document.getElementById('status-text');
 
-        // contador DESDE 0
-        for (let i = 0; i <= maxVal; i++) {
-            const contador = document.createElement('div');
-            contador.className = 'contador';
-            contador.innerHTML = `
-                <div class="contador-box" id="contador-${i}">0</div>
-                <div class="contador-label">${i}</div>
-            `;
-            contadorsContainer.appendChild(contador);
+const speedSlider = document.getElementById('speedSlider');
+const speedValue = document.getElementById('speedValue');
+
+let speed = parseInt(speedSlider.value);
+let paused = false;
+
+// velocidad dinámica
+speedSlider.addEventListener('input', () => {
+    speed = parseInt(speedSlider.value);
+    speedValue.textContent = speed + " ms";
+});
+
+// pausa
+pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    pauseBtn.textContent = paused ? "Continuar" : "Pausar";
+});
+
+// sleep inteligente
+const sleep = () => new Promise(resolve => {
+    const check = () => {
+        if (!paused) {
+            setTimeout(resolve, speed);
+        } else {
+            setTimeout(check, 100);
         }
+    };
+    check();
+});
+
+function init() {
+    array.forEach((val, i) => {
+        const div = document.createElement('div');
+        div.className = 'element';
+        div.textContent = val;
+        div.id = `input-${i}`;
+        inputContainer.appendChild(div);
+    });
+
+    for (let i = 0; i <= maxVal; i++) {
+        const c = document.createElement('div');
+        c.className = 'contador';
+        c.innerHTML = `
+            <div class="contador-box" id="contador-${i}">0</div>
+            <div class="contador-label">${i}</div>
+        `;
+        contadorsContainer.appendChild(c);
+    }
+}
+
+async function startAnimation() {
+    startBtn.disabled = true;
+    const counts = new Array(maxVal + 1).fill(0);
+
+    statusText.textContent = "Contando...";
+    for (let i = 0; i < array.length; i++) {
+        const val = array[i];
+        const el = document.getElementById(`input-${i}`);
+        const contador = document.getElementById(`contador-${val}`);
+
+        el.classList.add('active');
+        await sleep();
+
+        counts[val]++;
+        contador.textContent = counts[val];
+        contador.classList.add('highlight');
+
+        await sleep();
+        el.classList.remove('active');
+        el.classList.add('sorted');
+        contador.classList.remove('highlight');
     }
 
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    statusText.textContent = "Reconstruyendo...";
+    for (let i = 0; i <= maxVal; i++) {
+        const contador = document.getElementById(`contador-${i}`);
 
-    async function startAnimation() {
-        startBtn.disabled = true;
-        const counts = new Array(maxVal + 1).fill(0);
-
-        // FASE 1: CONTEO
-        statusText.textContent = "Fase 1: Contando...";
-        for (let i = 0; i < array.length; i++) {
-            const val = array[i];
-            const el = document.getElementById(`input-${i}`);
-            const contador = document.getElementById(`contador-${val}`);
-
-            el.classList.add('active');
-            await sleep(500);
-
-            counts[val]++;
-            contador.textContent = counts[val];
+        while (counts[i] > 0) {
             contador.classList.add('highlight');
 
-            await sleep(500);
-            el.classList.remove('active');
-            el.classList.add('sorted');
-            contador.classList.remove('highlight');
+            const out = document.createElement('div');
+            out.className = 'element active';
+            out.textContent = i;
+            outputContainer.appendChild(out);
+
+            await sleep();
+            out.classList.remove('active');
+
+            counts[i]--;
+            contador.textContent = counts[i];
+
+            await sleep();
         }
 
-        await sleep(800);
-
-        // FASE 2: RECONSTRUCCIÓN
-        statusText.textContent = "Fase 2: Reconstruyendo...";
-        for (let i = 0; i <= maxVal; i++) {
-            const contador = document.getElementById(`contador-${i}`);
-
-            while (counts[i] > 0) {
-                contador.classList.add('highlight');
-
-                const outEl = document.createElement('div');
-                outEl.className = 'element active';
-                outEl.textContent = i;
-                outputContainer.appendChild(outEl);
-
-                await sleep(400);
-                outEl.classList.remove('active');
-
-                counts[i]--;
-                contador.textContent = counts[i];
-
-                await sleep(300);
-            }
-
-            contador.classList.remove('highlight');
-        }
-
-        statusText.textContent = "¡Ordenamiento completado!";
+        contador.classList.remove('highlight');
     }
 
-    startBtn.addEventListener('click', startAnimation);
-    init();
+    statusText.textContent = "¡Completado!";
+}
+
+startBtn.addEventListener('click', startAnimation);
+init();
 </script>
 
 </body>
