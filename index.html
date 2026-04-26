@@ -1,9 +1,14 @@
+Tienes toda la razón. Podemos usar fuentes personalizadas de Google Fonts o del sistema que sean más robustas y se vean igual en todos los navegadores. Aquí está la página actualizada con **"Fira Code"** y **"JetBrains Mono"** como fuentes principales (son fuentes monoespaciadas excelentes para números y código, con soporte en todos los navegadores modernos).
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Counting Sort | Algoritmo de ordenamiento</title>
+    <!-- Fuentes personalizadas que funcionan en todos los navegadores modernos -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +18,7 @@
 
         body {
             background: white;
-            font-family: 'Segoe UI', 'Roboto', 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
@@ -33,7 +38,7 @@
             font-weight: 700;
             letter-spacing: -0.5px;
             margin: 0;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
         }
 
         .header p {
@@ -41,6 +46,7 @@
             margin-top: 0.4rem;
             font-size: 0.9rem;
             font-weight: 500;
+            font-family: 'Fira Code', monospace;
         }
 
         .main-content {
@@ -74,13 +80,13 @@
             color: black;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
         }
 
         input, button {
             border: 2px solid black;
             background: white;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
             font-size: 0.9rem;
             padding: 0.5rem 1rem;
             transition: all 0.1s ease;
@@ -139,7 +145,7 @@
             font-size: 0.85rem;
             margin-bottom: 1rem;
             color: black;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
             text-transform: uppercase;
             letter-spacing: 1px;
             border-left: 4px solid #7918A1;
@@ -174,19 +180,19 @@
             font-weight: 800;
             font-size: 0.8rem;
             color: #7918A1;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
             min-width: 28px;
         }
 
-        /* NUMEROS MAS NEGRITA - fuente mas pesada sin cambiar tamaño */
+        /* NUMEROS CON FUENTE PERSONALIZADA Y MAS NEGRITA */
         .input-item input {
             width: 85px;
             padding: 0.45rem 0.5rem;
             font-size: 0.9rem;
             border: 1px solid black;
             text-align: center;
-            font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace;
-            font-weight: 800;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            font-weight: 700;
             color: black;
             letter-spacing: 0.3px;
         }
@@ -212,7 +218,7 @@
             font-size: 0.9rem;
             margin-bottom: 0.8rem;
             color: black;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
             text-transform: uppercase;
             border-bottom: 2px solid #7918A1;
             display: inline-block;
@@ -220,7 +226,7 @@
         }
 
         .sorted-content {
-            font-family: 'Courier New', 'Fira Code', 'Source Code Pro', monospace;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
             font-size: 0.95rem;
             background: white;
             border: 1px solid #ccc;
@@ -229,7 +235,7 @@
             white-space: pre-wrap;
             line-height: 1.5;
             color: black;
-            font-weight: 800;
+            font-weight: 700;
             letter-spacing: 0.2px;
         }
 
@@ -238,15 +244,15 @@
             color: white;
             padding: 0.7rem;
             margin-top: 0.8rem;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', monospace;
             border-left: 5px solid #7918A1;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .info-stats {
             margin-top: 0.8rem;
             font-size: 0.7rem;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', monospace;
             color: #444;
             border-top: 1px solid #ddd;
             padding-top: 0.6rem;
@@ -270,7 +276,7 @@
             text-align: center;
             padding: 2rem;
             color: #666;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Code', monospace;
             font-size: 0.9rem;
             border: 1px dashed black;
             background: #fafafa;
@@ -295,11 +301,11 @@
             <label>&nbsp;</label>
             <button id="createArrayBtn">GENERAR ARREGLO</button>
         </div>
-        <div class="control-group" id="randomGroup">
+        <div class="control-group">
             <label>&nbsp;</label>
             <button id="randomizeBtn" class="btn-outline">VALORES ALEATORIOS</button>
         </div>
-        <div class="control-group" id="sortGroup">
+        <div class="control-group">
             <label>&nbsp;</label>
             <button id="sortBtn">ORDENAR (COUNTING SORT)</button>
         </div>
@@ -549,7 +555,7 @@
         }
     });
     
-    // Inicializacion: todo visible pero con mensaje de que se debe generar
+    // Inicializacion
     function init() {
         inputsContainer.innerHTML = '<div class="initial-message">Configure la cantidad de elementos y presione "GENERAR ARREGLO"</div>';
         arraySection.style.display = 'block';
@@ -563,3 +569,4 @@
 </script>
 </body>
 </html>
+```
