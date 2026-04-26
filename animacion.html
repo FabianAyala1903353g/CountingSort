@@ -112,9 +112,6 @@
             display: flex;
             gap: 20px;
             align-items: center;
-            <label style="font-size:0.8rem;">Velocidad:</label>
-            <input type="range" id="speedSlider" min="50" max="1000" step="50" value="500">
-            <span id="speedValue">500 ms</span>
         }
 
         button {
@@ -154,6 +151,9 @@
         <button id="startBtn">Iniciar Animación</button>
         <button onclick="window.location.reload()">Reiniciar</button>
         <span id="status-text">Listo para comenzar</span>
+        <label style="font-size:0.8rem;">Velocidad:</label>
+        <input type="range" id="speedSlider" min="50" max="1000" step="50" value="500">
+        <span id="speedValue">500 ms</span>
     </div>
 
     <div class="label-tag">ARREGLO ORIGINAL:</div>
