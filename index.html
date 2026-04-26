@@ -254,7 +254,7 @@
 <body>
 <div class="header">
     <h1>COUNTING SORT DINÁMICO</h1>
-    <p>Rango: 0 a 200 | Cubetas dinámicas hasta el valor máximo</p>
+    <p>Rango: 0 a 200 | Permite valores repetidos | Cubetas dinámicas hasta el valor máximo</p>
 </div>
 
 <div class="main-content">
@@ -278,7 +278,7 @@
     </div>
 
     <div class="array-section">
-        <div class="array-title">ARREGLO DE ENTEROS (0 a 200)</div>
+        <div class="array-title">ARREGLO DE ENTEROS (0 a 200) - CON REPETICIONES</div>
         <div class="inputs-wrapper">
             <div id="inputsContainer" class="inputs-grid"></div>
         </div>
@@ -299,6 +299,7 @@
 </div>
 
 <script>
+    // ALGORITMO COUNTING SORT (con soporte para 0 y repetidos)
     function algoritmoCountingSort(arregloEntrada) {
         if (arregloEntrada.length === 0) return { ordenado: [], max: 0 };
         
@@ -323,6 +324,7 @@
         return { ordenado: resultadoOrdenado, max: valorMaximo };
     }
     
+    // Generar números aleatorios CON repeticiones (0 a 200)
     function obtenerNumerosAleatorios(cantidad, valorMin, valorMax) {
         const numeros = [];
         for (let i = 0; i < cantidad; i++) {
@@ -340,9 +342,14 @@
     const visualizacionOrdenada = document.getElementById('sortedDisplay');
     const divMensajeError = document.getElementById('errorMsg');
     const estadisticasInfo = document.getElementById('infoStats');
+    const animationButtonContainer = document.getElementById('animationButtonContainer');
     
     function generarCamposEntrada(tamano) {
-        const tamanoFinal = Math.min(tamano, 100);
+        let tamanoFinal = parseInt(tamano);
+        if (isNaN(tamanoFinal) || tamanoFinal < 1) tamanoFinal = 1;
+        if (tamanoFinal > 100) tamanoFinal = 100;
+        
+        // Generar números aleatorios CON repeticiones (0-200)
         const numeros = obtenerNumerosAleatorios(tamanoFinal, 0, 200);
         
         contenedorEntradas.innerHTML = '';
@@ -354,39 +361,91 @@
         }
         
         visualizacionOrdenada.innerHTML = "[ sin ordenar ]";
-        document.getElementById('animationButtonContainer').style.display = 'none';
+        animationButtonContainer.style.display = 'none';
         divMensajeError.style.display = 'none';
+        estadisticasInfo.innerHTML = `Arreglo generado: ${tamanoFinal} elementos | Rango 0-200 | Permite repeticiones`;
     }
     
-    botonCrear.onclick = () => generarCamposEntrada(parseInt(inputTamano.value));
-    botonAleatorio.onclick = () => generarCamposEntrada(parseInt(inputTamano.value));
+    // Evento GENERAR ARREGLO
+    botonCrear.onclick = () => {
+        const tamano = parseInt(inputTamano.value);
+        generarCamposEntrada(tamano);
+    };
     
+    // Evento VALORES ALEATORIOS (mantiene el mismo tamaño, solo cambia los números)
+    botonAleatorio.onclick = () => {
+        const elementosInput = document.querySelectorAll('.array-elem-input');
+        if (elementosInput.length === 0) {
+            generarCamposEntrada(parseInt(inputTamano.value));
+            return;
+        }
+        const cantidad = elementosInput.length;
+        const nuevosNumeros = obtenerNumerosAleatorios(cantidad, 0, 200);
+        for (let i = 0; i < elementosInput.length; i++) {
+            elementosInput[i].value = nuevosNumeros[i];
+        }
+        visualizacionOrdenada.innerHTML = "[ sin ordenar - nuevos valores asignados ]";
+        animationButtonContainer.style.display = 'none';
+        divMensajeError.style.display = 'none';
+        estadisticasInfo.innerHTML = `Nuevos valores aleatorios | ${cantidad} elementos | Rango 0-200 | Permite repeticiones`;
+    };
+    
+    // Evento ORDENAR
     botonOrdenar.onclick = () => {
         const elementosInput = document.querySelectorAll('.array-elem-input');
+        if (elementosInput.length === 0) {
+            divMensajeError.textContent = "Primero genere un arreglo.";
+            divMensajeError.style.display = 'block';
+            return;
+        }
+        
         const valores = [];
+        let error = false;
         for (let inp of elementosInput) {
             let num = parseInt(inp.value);
-            if (isNaN(num) || num < 0 || num > 200) {
-                divMensajeError.textContent = "Error: El valor debe estar entre 0 y 200.";
+            if (isNaN(num)) {
+                divMensajeError.textContent = "Error: Todos los valores deben ser números.";
                 divMensajeError.style.display = 'block';
+                error = true;
+                return;
+            }
+            if (num < 0 || num > 200) {
+                divMensajeError.textContent = `Error: El valor ${num} está fuera del rango 0-200.`;
+                divMensajeError.style.display = 'block';
+                error = true;
                 return;
             }
             valores.push(num);
         }
         
+        if (error) return;
+        
         divMensajeError.style.display = 'none';
         const resObj = algoritmoCountingSort(valores);
         visualizacionOrdenada.innerHTML = `ORIGINAL: [ ${valores.join(", ")} ]<br>ORDENADO: [ ${resObj.ordenado.join(", ")} ]`;
-        estadisticasInfo.innerHTML = `Valor Máximo Detectado: ${resObj.max} | Cubetas creadas: ${resObj.max + 1}`;
-        document.getElementById('animationButtonContainer').style.display = 'block';
+        
+        // Mostrar estadísticas incluyendo si hay repeticiones
+        const tieneRepetidos = new Set(valores).size !== valores.length;
+        estadisticasInfo.innerHTML = `Valor Máximo: ${resObj.max} | Cubetas: ${resObj.max + 1} | Elementos: ${valores.length} | ${tieneRepetidos ? 'CON repeticiones' : 'Sin repeticiones'}`;
+        
+        // MOSTRAR EL BOTÓN DE ANIMACIÓN SOLO DESPUÉS DE ORDENAR
+        animationButtonContainer.style.display = 'block';
     };
 
+    // Redirigir a animacion.html con el arreglo actual
     botonAnimacion.onclick = () => {
         const elementosInput = document.querySelectorAll('.array-elem-input');
+        if (elementosInput.length === 0) {
+            divMensajeError.textContent = "No hay arreglo para animar.";
+            divMensajeError.style.display = 'block';
+            return;
+        }
         const valores = Array.from(elementosInput).map(i => parseInt(i.value));
-        window.open(`https://fabianayala1903353g.github.io/CountingSort/animacion.html?arr=${encodeURIComponent(JSON.stringify(valores))}`, '_blank');
+        const url = `https://fabianayala1903353g.github.io/CountingSort/animacion.html?arr=${encodeURIComponent(JSON.stringify(valores))}`;
+        window.open(url, '_blank');
     };
 
+    // Inicializar con 10 elementos
     generarCamposEntrada(10);
 </script>
 </body>
