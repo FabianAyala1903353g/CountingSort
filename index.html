@@ -1,10 +1,12 @@
+Entendido. Aquí está el archivo corregido: solo con el botón "Mostrar animación" (que por ahora no hace nada) y la funcionalidad de números aleatorios sin repetición. La animación irá en otro archivo aparte.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Counting Sort | Algoritmo de ordenamiento</title>
-    <!-- Fuentes personalizadas -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -27,13 +29,13 @@
             background: #7918A1;
             padding: 1.2rem 2rem;
             border-bottom: 3px solid black;
+            flex-shrink: 0;
         }
 
         .header h1 {
             color: white;
             font-size: 1.8rem;
             font-weight: 700;
-            letter-spacing: -0.5px;
             margin: 0;
             font-family: 'Fira Code', 'JetBrains Mono', monospace;
         }
@@ -41,9 +43,8 @@
         .header p {
             color: #f0e6f5;
             margin-top: 0.4rem;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            font-family: 'Fira Code', monospace;
         }
 
         .main-content {
@@ -62,6 +63,7 @@
             flex-wrap: wrap;
             gap: 0.8rem;
             align-items: flex-end;
+            flex-shrink: 0;
         }
 
         .control-group {
@@ -72,7 +74,7 @@
         }
 
         .control-group label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: black;
             text-transform: uppercase;
@@ -84,8 +86,8 @@
             border: 2px solid black;
             background: white;
             font-family: 'Fira Code', 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
             transition: all 0.1s ease;
             outline: none;
             color: black;
@@ -139,7 +141,7 @@
 
         .array-title {
             font-weight: 800;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             margin-bottom: 1rem;
             color: black;
             font-family: 'Fira Code', 'JetBrains Mono', monospace;
@@ -181,7 +183,6 @@
             min-width: 30px;
         }
 
-        /* NUMEROS MAS GRANDES Y NEGRITA */
         .input-item input {
             width: 95px;
             padding: 0.55rem 0.5rem;
@@ -281,12 +282,18 @@
             width: 100%;
             font-weight: 600;
         }
+
+        .bottom-buttons {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-start;
+        }
     </style>
 </head>
 <body>
 <div class="header">
     <h1>COUNTING SORT ALGORITHM</h1>
-    <p>Ordenamiento lineal por conteo | Solo enteros positivos (1 a 500)</p>
+    <p>Ordenamiento lineal por conteo | Enteros positivos sin repeticion (1 a 500)</p>
 </div>
 
 <div class="main-content">
@@ -301,7 +308,7 @@
         </div>
         <div class="control-group">
             <label>&nbsp;</label>
-            <button id="randomizeBtn" class="btn-outline">VALORES ALEATORIOS</button>
+            <button id="randomizeBtn" class="btn-outline">VALORES ALEATORIOS (UNICOS)</button>
         </div>
         <div class="control-group">
             <label>&nbsp;</label>
@@ -309,8 +316,8 @@
         </div>
     </div>
 
-    <div class="array-section" id="arraySection">
-        <div class="array-title">ARREGLO DE ENTEROS (1 a 500)</div>
+    <div class="array-section">
+        <div class="array-title">ARREGLO DE ENTEROS (1 a 500) - SIN REPETICIONES</div>
         <div class="inputs-wrapper">
             <div id="inputsContainer" class="inputs-grid">
                 <div class="initial-message">Configure la cantidad y presione "GENERAR ARREGLO"</div>
@@ -318,12 +325,16 @@
         </div>
     </div>
 
-    <div class="result-section" id="resultSection">
+    <div class="result-section">
         <div class="result-box">
             <div class="result-header">RESULTADO DEL ORDENAMIENTO</div>
             <div id="sortedDisplay" class="sorted-content">[ sin datos ]</div>
             <div id="errorMsg" class="error-message" style="display: none;"></div>
             <div id="infoStats" class="info-stats">Esperando generacion del arreglo...</div>
+        </div>
+        
+        <div class="bottom-buttons">
+            <button id="showAnimationBtn" class="btn-outline">MOSTRAR ANIMACION</button>
         </div>
     </div>
 </div>
@@ -348,11 +359,7 @@
             }
         }
         
-        let maxValue = arr[0];
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i] > maxValue) maxValue = arr[i];
-        }
-        
+        let maxValue = Math.max(...arr);
         let countArray = new Array(maxValue + 1).fill(0);
         
         for (let i = 0; i < arr.length; i++) {
@@ -370,18 +377,34 @@
     }
     
     // --------------------------------------------------------------
+    // FUNCION PARA GENERAR NUMEROS UNICOS (SIN REPETICIONES)
+    // --------------------------------------------------------------
+    function generateUniqueRandomNumbers(count, minVal = 1, maxVal = 500) {
+        if (count > (maxVal - minVal + 1)) {
+            throw new Error(`No se pueden generar ${count} numeros unicos en el rango ${minVal}-${maxVal}. Maximo permitido: ${maxVal - minVal + 1}`);
+        }
+        let available = [];
+        for (let i = minVal; i <= maxVal; i++) available.push(i);
+        // Fisher-Yates shuffle
+        for (let i = available.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [available[i], available[j]] = [available[j], available[i]];
+        }
+        return available.slice(0, count);
+    }
+    
+    // --------------------------------------------------------------
     // DOM ELEMENTS
     // --------------------------------------------------------------
     const sizeInput = document.getElementById('arraySizeInput');
     const createBtn = document.getElementById('createArrayBtn');
     const randomizeBtn = document.getElementById('randomizeBtn');
     const sortBtn = document.getElementById('sortBtn');
+    const showAnimationBtn = document.getElementById('showAnimationBtn');
     const inputsContainer = document.getElementById('inputsContainer');
     const sortedDisplaySpan = document.getElementById('sortedDisplay');
     const errorMsgDiv = document.getElementById('errorMsg');
     const infoStatsSpan = document.getElementById('infoStats');
-    const arraySection = document.getElementById('arraySection');
-    const resultSection = document.getElementById('resultSection');
     
     function hideError() {
         errorMsgDiv.style.display = 'none';
@@ -425,6 +448,13 @@
             }
             values.push(num);
         }
+        
+        // Verificar si hay repeticiones (solo advertencia, no error)
+        const uniqueCheck = new Set(values);
+        if (uniqueCheck.size !== values.length) {
+            showError("Advertencia: Hay numeros repetidos. Se recomienda usar valores unicos para mejor visualizacion.");
+        }
+        
         return { error: false, array: values };
     }
     
@@ -452,7 +482,8 @@
             const originalStr = originalArray.join(", ");
             const sortedStr = sortedArray.join(", ");
             sortedDisplaySpan.innerHTML = `ORIGINAL: [ ${originalStr} ]<br>ORDENADO: [ ${sortedStr} ]`;
-            infoStatsSpan.innerHTML = `Rango: min=${minOriginal} | max=${maxOriginal} | Elementos: ${originalArray.length} | Tamano conteo: ${maxOriginal+1}`;
+            const tieneRepetidos = new Set(originalArray).size !== originalArray.length;
+            infoStatsSpan.innerHTML = `Rango: min=${minOriginal} | max=${maxOriginal} | Elementos: ${originalArray.length} | Unicos: ${tieneRepetidos ? 'NO' : 'SI'} | Tamano conteo: ${maxOriginal+1}`;
         } catch (err) {
             showError(err.message);
             sortedDisplaySpan.innerHTML = "[ error en ordenamiento ]";
@@ -460,7 +491,7 @@
         }
     }
     
-    function generateInputFields(size, fillWithRandom = true) {
+    function generateInputFields(size, valuesArray = null) {
         if (!size || size < 1) size = 1;
         const maxAllowed = 100;
         let finalSize = size;
@@ -468,6 +499,19 @@
             showError(`Maximo permitido: ${maxAllowed} elementos.`);
             finalSize = maxAllowed;
             sizeInput.value = maxAllowed;
+        }
+        
+        let finalValues;
+        if (valuesArray && valuesArray.length === finalSize) {
+            finalValues = valuesArray;
+        } else {
+            try {
+                finalValues = generateUniqueRandomNumbers(finalSize, 1, 500);
+            } catch (err) {
+                showError(err.message);
+                finalValues = [];
+                for (let i = 0; i < finalSize; i++) finalValues.push(i + 1);
+            }
         }
         
         inputsContainer.innerHTML = '';
@@ -481,40 +525,38 @@
             inputElem.step = '1';
             inputElem.min = '1';
             inputElem.max = '500';
-            
-            let defaultValue = 1;
-            if (fillWithRandom) {
-                defaultValue = Math.floor(Math.random() * 500) + 1;
-            }
-            inputElem.value = defaultValue;
+            inputElem.value = finalValues[i];
             inputElem.className = 'array-elem-input';
             wrapper.appendChild(indexSpan);
             wrapper.appendChild(inputElem);
             inputsContainer.appendChild(wrapper);
         }
         
-        arraySection.style.display = 'block';
-        resultSection.style.display = 'flex';
-        
-        infoStatsSpan.innerHTML = `Arreglo generado: ${finalSize} elementos (rango 1-500). Puede editar o usar aleatorios.`;
+        infoStatsSpan.innerHTML = `Arreglo generado: ${finalSize} elementos UNICOS (sin repeticiones). Rango 1-500.`;
         sortedDisplaySpan.innerHTML = "[ sin ordenar ]";
         hideError();
     }
     
-    function fillWithRandomValues() {
+    function fillWithRandomUnique() {
         const inputs = document.querySelectorAll('.array-elem-input');
         if (inputs.length === 0) {
             showError("Primero genere el arreglo (Boton GENERAR ARREGLO)");
             return false;
         }
-        for (let inp of inputs) {
-            let randomVal = Math.floor(Math.random() * 500) + 1;
-            inp.value = randomVal;
+        const size = inputs.length;
+        try {
+            const newValues = generateUniqueRandomNumbers(size, 1, 500);
+            for (let i = 0; i < inputs.length; i++) {
+                inputs[i].value = newValues[i];
+            }
+            hideError();
+            sortedDisplaySpan.innerHTML = "[ valores unicos asignados, presione ORDENAR ]";
+            infoStatsSpan.innerHTML = `Nuevos valores UNICOS (sin repeticiones). Total: ${size}`;
+            return true;
+        } catch (err) {
+            showError(err.message);
+            return false;
         }
-        hideError();
-        sortedDisplaySpan.innerHTML = "[ valores aleatorios asignados, presione ORDENAR ]";
-        infoStatsSpan.innerHTML = `Nuevos valores aleatorios (1-500). Total elementos: ${inputs.length}`;
-        return true;
     }
     
     // Eventos
@@ -530,11 +572,11 @@
             newSize = 100;
             sizeInput.value = 100;
         }
-        generateInputFields(newSize, true);
+        generateInputFields(newSize, null);
     });
     
     randomizeBtn.addEventListener('click', () => {
-        fillWithRandomValues();
+        fillWithRandomUnique();
     });
     
     sortBtn.addEventListener('click', () => {
@@ -544,6 +586,11 @@
             return;
         }
         updateSortedDisplay();
+    });
+    
+    // Boton mostrar animacion - por ahora solo un mensaje (la animacion ira en otro archivo)
+    showAnimationBtn.addEventListener('click', () => {
+        alert("La animacion se implementara en un archivo separado. Por ahora, los numeros aleatorios ya no se repiten.");
     });
     
     sizeInput.addEventListener('keypress', (e) => {
@@ -556,14 +603,11 @@
     // Inicializacion
     function init() {
         inputsContainer.innerHTML = '<div class="initial-message">Configure la cantidad de elementos y presione "GENERAR ARREGLO"</div>';
-        arraySection.style.display = 'block';
-        resultSection.style.display = 'flex';
-        sortedDisplaySpan.innerHTML = "[ sin datos ]";
-        infoStatsSpan.innerHTML = "Presione 'GENERAR ARREGLO' para comenzar.";
-        hideError();
+        generateInputFields(10, null);
     }
     
     init();
 </script>
 </body>
 </html>
+```
