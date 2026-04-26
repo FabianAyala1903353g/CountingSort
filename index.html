@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Counting Sort | Rango 0-200</title>
+    <title>Counting Sort Dinámico | 0-200</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -254,7 +254,7 @@
 <body>
 <div class="header">
     <h1>COUNTING SORT DINÁMICO</h1>
-    <p>Rango: 0 a 200 | Tamaño de cubetas según valor máximo</p>
+    <p>Rango: 0 a 200 | Cubetas dinámicas hasta el valor máximo</p>
 </div>
 
 <div class="main-content">
@@ -367,7 +367,7 @@
         for (let inp of elementosInput) {
             let num = parseInt(inp.value);
             if (isNaN(num) || num < 0 || num > 200) {
-                divMensajeError.textContent = "Error: Rango 0 a 200 únicamente.";
+                divMensajeError.textContent = "Error: El valor debe estar entre 0 y 200.";
                 divMensajeError.style.display = 'block';
                 return;
             }
@@ -377,7 +377,7 @@
         divMensajeError.style.display = 'none';
         const resObj = algoritmoCountingSort(valores);
         visualizacionOrdenada.innerHTML = `ORIGINAL: [ ${valores.join(", ")} ]<br>ORDENADO: [ ${resObj.ordenado.join(", ")} ]`;
-        estadisticasInfo.innerHTML = `Valor Máximo: ${resObj.max} | Cubetas creadas: ${resObj.max + 1}`;
+        estadisticasInfo.innerHTML = `Valor Máximo Detectado: ${resObj.max} | Cubetas creadas: ${resObj.max + 1}`;
         document.getElementById('animationButtonContainer').style.display = 'block';
     };
 
