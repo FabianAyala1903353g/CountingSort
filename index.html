@@ -3,607 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Counting Sort: Demo interactivo + código en C</title>
+    <title>Counting Sort | Algoritmo de ordenamiento</title>
     <style>
         * {
             box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Fira Code', monospace, 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background: linear-gradient(145deg, #f0f4fa 0%, #e6edf4 100%);
-            margin: 0;
-            padding: 2rem 1.5rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .main-container {
-            max-width: 1300px;
-            width: 100%;
-            background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(1px);
-            border-radius: 2.5rem;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.25);
-            overflow: hidden;
-            transition: all 0.2s;
-        }
-
-        /* Header */
-        .hero {
-            background: #0b2b3b;
-            padding: 1.5rem 2rem;
-            color: white;
-        }
-        .hero h1 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 1.9rem;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .hero h1 small {
-            font-size: 0.85rem;
-            font-weight: 400;
-            background: #2c5f7a;
-            padding: 0.2rem 0.7rem;
-            border-radius: 40px;
-        }
-        .hero p {
-            margin: 0.5rem 0 0;
-            opacity: 0.85;
-            font-size: 1rem;
-        }
-
-        /* Two column layout */
-        .columns {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.8rem;
-            padding: 2rem;
-        }
-
-        .demo-panel {
-            flex: 2;
-            min-width: 280px;
             background: white;
-            border-radius: 1.8rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            padding: 1.5rem;
-            transition: 0.2s;
-        }
-
-        .c-code-panel {
-            flex: 1.4;
-            min-width: 320px;
-            background: #1e1f2c;
-            border-radius: 1.8rem;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-            padding: 1.2rem;
-            color: #f0f0f0;
-        }
-
-        /* form controls */
-        .control-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-end;
-            gap: 12px;
-            margin-bottom: 1.8rem;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 1.2rem;
-        }
-        .field {
+            font-family: 'Segoe UI', 'Roboto', 'Courier New', monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 5px;
         }
-        .field label {
-            font-weight: 600;
-            font-size: 0.8rem;
+
+        /* Header - sin bordes redondeados, solo rectangulos */
+        .header {
+            background: #7918A1;
+            padding: 1.2rem 2rem;
+            border-bottom: 3px solid black;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .header p {
+            color: #f0e6f5;
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Main content - full remaining space */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: white;
+        }
+
+        /* Panel de control - sin redondeos */
+        .control-panel {
+            background: white;
+            border-bottom: 2px solid black;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: white;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: black;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #2c5f7a;
+            font-family: 'Courier New', monospace;
         }
+
         input, button {
-            border-radius: 60px;
-            border: 1px solid #cbd5e1;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
+            border: 2px solid black;
             background: white;
-            transition: 0.2s;
-        }
-        input:focus {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.1s ease;
             outline: none;
-            border-color: #0f6b8c;
-            box-shadow: 0 0 0 2px rgba(15,107,140,0.2);
-        }
-        button {
-            background: #2c3e50;
-            color: white;
+            color: black;
             font-weight: 600;
-            border: none;
+            border-radius: 0px;
+        }
+
+        input:focus {
+            border-color: #7918A1;
+            background: #faf5ff;
+        }
+
+        button {
+            background: black;
+            color: white;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0.5rem 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid black;
         }
+
         button:hover {
-            background: #1f4e6e;
-            transform: translateY(-1px);
-            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+            background: #7918A1;
+            border-color: #7918A1;
+            color: white;
         }
+
         button:active {
-            transform: translateY(1px);
+            transform: scale(0.98);
         }
-        .btn-random {
-            background: #2b6e4e;
+
+        .btn-outline {
+            background: white;
+            color: black;
+            border: 2px solid black;
         }
-        .btn-random:hover {
-            background: #1e5940;
+
+        .btn-outline:hover {
+            background: #7918A1;
+            color: white;
+            border-color: #7918A1;
         }
-        .btn-sort {
-            background: #1f6392;
+
+        /* Area de inputs del arreglo - scrollable */
+        .array-section {
+            background: white;
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
+            display: block;
         }
-        .btn-sort:hover {
-            background: #0e4a6e;
+
+        .array-section.hidden {
+            display: none;
         }
-        .array-inputs {
-            background: #f9fafc;
-            border-radius: 1.2rem;
-            padding: 1rem;
-            margin: 1rem 0 1.2rem;
-            border: 1px solid #e4edf2;
+
+        .array-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            color: black;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 4px solid #7918A1;
+            padding-left: 12px;
+        }
+
+        .inputs-wrapper {
             max-height: 280px;
             overflow-y: auto;
+            background: #fefefe;
+            border: 1px solid black;
+            padding: 1rem;
         }
+
         .inputs-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             align-items: center;
         }
+
         .input-item {
-            background: white;
-            border-radius: 40px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            padding: 4px 12px 4px 16px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
-            border: 1px solid #dce5ec;
+            background: white;
+            border: 1px solid black;
+            padding: 4px 8px 4px 12px;
         }
+
         .input-item span {
-            font-weight: 600;
-            color: #1f6392;
-            font-size: 0.8rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #7918A1;
+            font-family: monospace;
+            min-width: 28px;
         }
+
         .input-item input {
             width: 80px;
-            border-radius: 30px;
-            text-align: center;
             padding: 0.4rem 0.5rem;
-            border: 1px solid #cbd5e6;
-        }
-        .result-area {
-            background: #eef3fa;
-            padding: 1rem;
-            border-radius: 1.2rem;
-            margin-top: 1rem;
-        }
-        .result-area h3 {
-            margin: 0 0 8px 0;
-            font-size: 1.1rem;
-            color: #0b2b3b;
-        }
-        .sorted-value {
-            font-family: 'Fira Code', monospace;
-            word-break: break-all;
-            background: #0b2b3b;
-            color: #bbe1f0;
-            padding: 0.7rem;
-            border-radius: 1rem;
-            font-size: 1rem;
-        }
-        .error-msg {
-            color: #c0392b;
-            background: #ffe6e5;
-            padding: 0.5rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            border: 1px solid black;
             text-align: center;
         }
-        hr {
-            margin: 1rem 0;
-            border-color: #e2edf2;
-        }
-        /* código C */
-        .code-header {
+
+        /* Resultado final - ocupa espacio restante */
+        .result-section {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            background: white;
+            overflow-y: auto;
             display: flex;
-            align-items: baseline;
-            justify-content: space-between;
+            flex-direction: column;
+        }
+
+        .result-box {
+            background: #f8f8f8;
+            border: 2px solid black;
+            padding: 1.2rem;
+            width: 100%;
+        }
+
+        .result-header {
+            font-weight: 800;
+            font-size: 0.9rem;
             margin-bottom: 0.8rem;
-            border-bottom: 1px solid #4a4f62;
-            padding-bottom: 6px;
+            color: black;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            border-bottom: 2px solid #7918A1;
+            display: inline-block;
+            padding-bottom: 5px;
         }
-        .code-header h3 {
-            margin: 0;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-        pre {
-            background: #0f111a;
+
+        .sorted-content {
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 0.95rem;
+            background: white;
+            border: 1px solid #ccc;
             padding: 1rem;
-            border-radius: 1.2rem;
-            overflow-x: auto;
-            font-size: 0.8rem;
-            font-family: 'Fira Code', 'Cascadia Code', monospace;
-            line-height: 1.4;
-            color: #d4f1f9;
+            word-break: break-word;
             white-space: pre-wrap;
-            word-wrap: break-word;
+            line-height: 1.5;
+            color: black;
+            font-weight: 500;
         }
-        code {
-            font-family: inherit;
+
+        .error-message {
+            background: black;
+            color: white;
+            padding: 0.7rem;
+            margin-top: 0.8rem;
+            font-family: monospace;
+            border-left: 5px solid #7918A1;
+            font-weight: bold;
         }
-        .footer-note {
+
+        .info-stats {
+            margin-top: 0.8rem;
             font-size: 0.7rem;
-            text-align: center;
-            margin-top: 1rem;
-            opacity: 0.7;
+            font-family: monospace;
+            color: #444;
+            border-top: 1px solid #ddd;
+            padding-top: 0.6rem;
         }
-        @media (max-width: 780px) {
-            body { padding: 1rem; }
-            .columns { padding: 1rem; }
-            .input-item input { width: 65px; }
+
+        /* scrollbar estilo minimal */
+        .inputs-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .inputs-wrapper::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-left: 1px solid #ccc;
+        }
+        .inputs-wrapper::-webkit-scrollbar-thumb {
+            background: #7918A1;
+            border-radius: 0px;
+        }
+
+        /* Mensaje inicial */
+        .initial-message {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border: 1px dashed black;
+            background: #fafafa;
         }
     </style>
 </head>
 <body>
-<div class="main-container">
-    <div class="hero">
-        <h1>
-            📊 Counting Sort 
-            <small>O(n + k) · estable · solo enteros ≥ 0</small>
-        </h1>
-        <p>Ingrese tamaño del arreglo, valores manuales o genere aleatorios. El ordenamiento se realiza con <strong>Counting Sort</strong> puro.</p>
+<div class="header">
+    <h1>COUNTING SORT ALGORITHM</h1>
+    <p>Ordenamiento lineal por conteo | Solo enteros positivos (1 a 500)</p>
+</div>
+
+<div class="main-content">
+    <!-- Barra de controles superior -->
+    <div class="control-panel">
+        <div class="control-group">
+            <label>CANTIDAD DE ELEMENTOS</label>
+            <input type="number" id="arraySizeInput" min="1" max="100" value="10" step="1">
+        </div>
+        <div class="control-group">
+            <label>&nbsp;</label>
+            <button id="createArrayBtn">GENERAR ARREGLO</button>
+        </div>
+        <div class="control-group" id="randomGroup" style="display: none;">
+            <label>&nbsp;</label>
+            <button id="randomizeBtn" class="btn-outline">VALORES ALEATORIOS</button>
+        </div>
+        <div class="control-group" id="sortGroup" style="display: none;">
+            <label>&nbsp;</label>
+            <button id="sortBtn">ORDENAR (COUNTING SORT)</button>
+        </div>
     </div>
 
-    <div class="columns">
-        <!-- PANEL INTERACTIVO (HTML/JS) -->
-        <div class="demo-panel">
-            <div class="control-group">
-                <div class="field">
-                    <label>📌 Cantidad de elementos</label>
-                    <input type="number" id="arraySizeInput" min="1" max="30" value="6" step="1">
-                </div>
-                <div class="field">
-                    <label>🛠️ Acción</label>
-                    <button id="createArrayBtn">✏️ Generar campos</button>
-                </div>
-                <div class="field">
-                    <label>🎲 Aleatorizar</label>
-                    <button id="randomizeBtn" class="btn-random">🎲 Valores aleatorios</button>
-                </div>
-                <div class="field">
-                    <label>⚡ Ordenar</label>
-                    <button id="sortBtn" class="btn-sort">📈 Counting Sort</button>
-                </div>
-            </div>
-
-            <div class="array-inputs">
-                <div style="font-size: 0.8rem; margin-bottom: 10px; font-weight: 500;">✏️ Arreglo (enteros ≥ 0):</div>
-                <div id="inputsContainer" class="inputs-grid">
-                    <!-- Aquí se generan dinámicamente los inputs -->
-                    <span style="color: #7f8c8d;">Configure el tamaño y pulse "Generar campos"</span>
-                </div>
-            </div>
-
-            <div class="result-area" id="resultArea">
-                <h3>📦 Resultado del ordenamiento</h3>
-                <div id="sortedDisplay" class="sorted-value">— aún no ordenado —</div>
-                <div id="errorMsg" class="error-msg" style="display: none;"></div>
-                <div id="infoRange" style="font-size:0.75rem; margin-top: 8px; color:#406e8e;"></div>
-            </div>
-            <div class="footer-note">
-                💡 Counting Sort solo funciona con números enteros no negativos. Si ingresa negativos se mostrará error.
+    <!-- Area editable del arreglo (inicialmente oculta) -->
+    <div class="array-section" id="arraySection">
+        <div class="array-title">ARREGLO DE ENTEROS (1 a 500)</div>
+        <div class="inputs-wrapper">
+            <div id="inputsContainer" class="inputs-grid">
+                <div class="initial-message">Configure el tamano y pulse 'GENERAR ARREGLO'</div>
             </div>
         </div>
+    </div>
 
-        <!-- PANEL CÓDIGO EN C -->
-        <div class="c-code-panel">
-            <div class="code-header">
-                <h3>⚙️ Implementación en C</h3>
-                <span style="font-size:0.7rem;">algoritmo clásico</span>
-            </div>
-            <pre><code>// Counting Sort en C (enteros no negativos)
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;limits.h&gt;
-
-void countingSort(int arr[], int n) {
-    if (n <= 0) return;
-    
-    // 1. Encontrar el valor máximo
-    int max = arr[0];
-    for (int i = 1; i < n; i++)
-        if (arr[i] > max) max = arr[i];
-    
-    // 2. Crear arreglo de conteo
-    int *count = (int*)calloc(max + 1, sizeof(int));
-    
-    // 3. Contar ocurrencias
-    for (int i = 0; i < n; i++)
-        count[arr[i]]++;
-    
-    // 4. Reconstruir arreglo ordenado
-    int index = 0;
-    for (int i = 0; i <= max; i++) {
-        while (count[i]--) {
-            arr[index++] = i;
-        }
-    }
-    free(count);
-}
-
-// Ejemplo de uso interactivo
-int main() {
-    int n;
-    printf("Cantidad de elementos: ");
-    scanf("%d", &n);
-    
-    int *arr = (int*)malloc(n * sizeof(int));
-    printf("Ingrese %d enteros no negativos:\n", n);
-    for (int i = 0; i < n; i++)
-        scanf("%d", &arr[i]);
-    
-    countingSort(arr, n);
-    
-    printf("Arreglo ordenado: ");
-    for (int i = 0; i < n; i++)
-        printf("%d ", arr[i]);
-    printf("\n");
-    
-    free(arr);
-    return 0;
-}</code></pre>
-            <div style="margin-top: 12px; font-size:0.75rem; background:#2d2f3a; padding: 6px 12px; border-radius: 20px;">
-                ✅ Complejidad temporal O(n + k), memoria O(k). Ideal para rangos acotados.
-            </div>
+    <!-- Resultados (inicialmente ocultos hasta que haya datos) -->
+    <div class="result-section" id="resultSection" style="display: none;">
+        <div class="result-box">
+            <div class="result-header">RESULTADO DEL ORDENAMIENTO</div>
+            <div id="sortedDisplay" class="sorted-content">[ sin ordenar ]</div>
+            <div id="errorMsg" class="error-message" style="display: none;"></div>
+            <div id="infoStats" class="info-stats">Esperando datos del arreglo...</div>
         </div>
     </div>
 </div>
 
 <script>
-    // ---------- LÓGICA DEL ALGORITMO COUNTING SORT (JavaScript) ----------
-    /**
-     * countingSort: recibe un array de enteros NO NEGATIVOS
-     * retorna un nuevo array ordenado de menor a mayor
-     * Lanza error si hay valores negativos o no enteros
-     */
-    function countingSort(arr) {
-        if (!Array.isArray(arr)) throw new Error("Formato inválido");
+    // ------------------------------------------------------------------
+    // IMPLEMENTACION DEL ALGORITMO COUNTING SORT (Rango positivo)
+    // ------------------------------------------------------------------
+    function countingSortAlgorithm(arr) {
+        if (!Array.isArray(arr)) throw new Error("El arreglo no es valido");
         if (arr.length === 0) return [];
         
-        // Validación de enteros no negativos
+        // Validacion: todos deben ser enteros positivos (>=1) y maximo 500 segun especificacion
         for (let i = 0; i < arr.length; i++) {
-            if (!Number.isInteger(arr[i])) throw new Error(`El valor ${arr[i]} no es un entero`);
-            if (arr[i] < 0) throw new Error(`Counting Sort requiere valores ≥ 0. Valor negativo: ${arr[i]}`);
-        }
-
-        // 1. Obtener el valor máximo
-        let maxVal = Math.max(...arr);
-        
-        // 2. Arreglo de frecuencias (tamaño maxVal+1)
-        let count = new Array(maxVal + 1).fill(0);
-        
-        // 3. Conteo
-        for (let i = 0; i < arr.length; i++) {
-            count[arr[i]]++;
-        }
-        
-        // 4. Reconstrucción ordenada
-        let sorted = [];
-        for (let i = 0; i <= maxVal; i++) {
-            while (count[i] > 0) {
-                sorted.push(i);
-                count[i]--;
+            if (!Number.isInteger(arr[i])) {
+                throw new Error(`Elemento '${arr[i]}' no es un entero.`);
+            }
+            if (arr[i] < 1) {
+                throw new Error(`Counting Sort requiere valores >= 1. Valor invalido: ${arr[i]}`);
+            }
+            if (arr[i] > 500) {
+                throw new Error(`Valor maximo permitido es 500. Valor encontrado: ${arr[i]}`);
             }
         }
-        return sorted;
+        
+        // 1) Encontrar el valor maximo
+        let maxValue = arr[0];
+        for (let i = 1; i < arr.length; i++) {
+            if (arr[i] > maxValue) maxValue = arr[i];
+        }
+        
+        // 2) Arreglo de frecuencias (tamanio max+1)
+        let countArray = new Array(maxValue + 1).fill(0);
+        
+        // 3) Conteo de ocurrencias
+        for (let i = 0; i < arr.length; i++) {
+            countArray[arr[i]]++;
+        }
+        
+        // 4) Reconstruir el arreglo ordenado
+        let sortedResult = [];
+        for (let value = 1; value <= maxValue; value++) {
+            while (countArray[value] > 0) {
+                sortedResult.push(value);
+                countArray[value]--;
+            }
+        }
+        return sortedResult;
     }
     
-    // ---------- MANEJO DEL DOM Y UI ----------
-    // Referencias
+    // ------------------------------------------------------------------
+    // MANEJO DEL DOM Y LAS INTERACCIONES
+    // ------------------------------------------------------------------
     const sizeInput = document.getElementById('arraySizeInput');
     const createBtn = document.getElementById('createArrayBtn');
     const randomizeBtn = document.getElementById('randomizeBtn');
     const sortBtn = document.getElementById('sortBtn');
+    const randomGroup = document.getElementById('randomGroup');
+    const sortGroup = document.getElementById('sortGroup');
+    const arraySection = document.getElementById('arraySection');
+    const resultSection = document.getElementById('resultSection');
     const inputsContainer = document.getElementById('inputsContainer');
-    const sortedDisplay = document.getElementById('sortedDisplay');
+    const sortedDisplaySpan = document.getElementById('sortedDisplay');
     const errorMsgDiv = document.getElementById('errorMsg');
-    const infoRangeSpan = document.getElementById('infoRange');
+    const infoStatsSpan = document.getElementById('infoStats');
     
-    // Obtener inputs actuales (como array de números)
-    function getCurrentArray() {
+    // Limpiar mensajes de error
+    function hideError() {
+        errorMsgDiv.style.display = 'none';
+        errorMsgDiv.textContent = '';
+    }
+    
+    function showError(message) {
+        errorMsgDiv.textContent = message;
+        errorMsgDiv.style.display = 'block';
+        setTimeout(() => {
+            if (errorMsgDiv.textContent === message) {
+                errorMsgDiv.style.display = 'none';
+            }
+        }, 4500);
+    }
+    
+    // Obtener el arreglo actual desde los inputs numericos
+    function getCurrentArrayFromInputs() {
         const inputElements = document.querySelectorAll('.array-elem-input');
+        if (inputElements.length === 0) {
+            return { error: true, message: "No hay campos definidos. Presione 'GENERAR ARREGLO' primero." };
+        }
+        
         const values = [];
         for (let inp of inputElements) {
-            let rawValue = inp.value.trim();
-            if (rawValue === "") {
-                return { error: true, message: "Hay campos vacíos. Complete todos los valores." };
+            let raw = inp.value.trim();
+            if (raw === "") {
+                return { error: true, message: "Existen campos vacios. Complete todos los valores." };
             }
-            let num = Number(rawValue);
+            let num = Number(raw);
             if (isNaN(num)) {
-                return { error: true, message: `"${rawValue}" no es un número válido.` };
+                return { error: true, message: `Valor no numerico: "${raw}"` };
             }
             if (!Number.isInteger(num)) {
-                return { error: true, message: `"${num}" debe ser un entero.` };
+                return { error: true, message: `El numero ${num} debe ser entero.` };
             }
-            if (num < 0) {
-                return { error: true, message: `El número ${num} es negativo. Counting Sort solo soporta ≥ 0.` };
+            if (num < 1) {
+                return { error: true, message: `Valor invalido: ${num}. Los numeros deben ser desde 1 hasta 500.` };
+            }
+            if (num > 500) {
+                return { error: true, message: `Valor ${num} excede el maximo permitido (500).` };
             }
             values.push(num);
         }
         return { error: false, array: values };
     }
     
-    // Mostrar error en la UI
-    function showError(message) {
-        errorMsgDiv.textContent = message;
-        errorMsgDiv.style.display = 'block';
-        setTimeout(() => {
-            if (errorMsgDiv.style.display === 'block') {
-                // se oculta después de 3.5 segundos si no se repite
-                setTimeout(() => {
-                    if (errorMsgDiv.textContent === message) 
-                        errorMsgDiv.style.display = 'none';
-                }, 3200);
-            }
-        }, 100);
+    // Actualizar la UI con el arreglo ordenado
+    function updateSortedDisplay() {
+        hideError();
+        const result = getCurrentArrayFromInputs();
+        if (result.error) {
+            showError(result.message);
+            sortedDisplaySpan.innerHTML = "[ error en datos ]";
+            infoStatsSpan.innerHTML = "Corrija los valores e intente nuevamente. Rango permitido: 1 a 500";
+            return;
+        }
+        
+        const originalArray = result.array;
+        if (originalArray.length === 0) {
+            sortedDisplaySpan.innerHTML = "[ arreglo vacio ]";
+            infoStatsSpan.innerHTML = "No hay elementos para ordenar.";
+            return;
+        }
+        
+        try {
+            const sortedArray = countingSortAlgorithm(originalArray);
+            const maxOriginal = Math.max(...originalArray);
+            const minOriginal = Math.min(...originalArray);
+            const originalStr = originalArray.join(", ");
+            const sortedStr = sortedArray.join(", ");
+            sortedDisplaySpan.innerHTML = `ORIGINAL: [ ${originalStr} ]<br>ORDENADO: [ ${sortedStr} ]`;
+            infoStatsSpan.innerHTML = `Rango: min=${minOriginal} | max=${maxOriginal} | Elementos: ${originalArray.length} | Conteo size: ${maxOriginal+1}`;
+        } catch (err) {
+            showError(err.message);
+            sortedDisplaySpan.innerHTML = "[ error en ordenamiento ]";
+            infoStatsSpan.innerHTML = "Verifique que todos los valores sean enteros entre 1 y 500.";
+        }
     }
     
-    function clearError() {
-        errorMsgDiv.style.display = 'none';
-        errorMsgDiv.textContent = '';
-    }
-    
-    // Generar campos dinámicos según tamaño actual (sin rellenar automáticamente con ceros)
+    // Generar los campos input segun el tamaño actual (valores entre 1 y 500)
     function generateInputFields(size, fillWithRandom = true) {
         if (!size || size < 1) size = 1;
-        if (size > 40) size = 40; // seguridad visual
+        let maxAllowed = 100;
+        if (size > maxAllowed) {
+            showError(`Maximo permitido: ${maxAllowed} elementos.`);
+            size = maxAllowed;
+            sizeInput.value = maxAllowed;
+        }
         
         inputsContainer.innerHTML = '';
         for (let i = 0; i < size; i++) {
             const wrapper = document.createElement('div');
             wrapper.className = 'input-item';
-            const labelSpan = document.createElement('span');
-            labelSpan.textContent = `${i+1}`;
+            const indexSpan = document.createElement('span');
+            indexSpan.textContent = `${i+1}`;
             const inputElem = document.createElement('input');
             inputElem.type = 'number';
             inputElem.step = '1';
-            inputElem.min = '0';
-            inputElem.value = fillWithRandom ? Math.floor(Math.random() * 100) : '0';
+            inputElem.min = '1';
+            inputElem.max = '500';
+            
+            let defaultValue = 1;
+            if (fillWithRandom) {
+                // valores aleatorios entre 1 y 500
+                defaultValue = Math.floor(Math.random() * 500) + 1;
+            }
+            inputElem.value = defaultValue;
             inputElem.className = 'array-elem-input';
-            // atributo placeholder
-            inputElem.setAttribute('aria-label', `elemento ${i+1}`);
-            wrapper.appendChild(labelSpan);
+            wrapper.appendChild(indexSpan);
             wrapper.appendChild(inputElem);
             inputsContainer.appendChild(wrapper);
         }
-        // si no se debe rellenar aleatorio pero se pide generación limpia: mejor dejar valores 0? 
-        // Por UX usamos aleatorio por defecto (a gusto del usuario), el botón random hará lo mismo.
-        if (!fillWithRandom) {
-            const allInputs = document.querySelectorAll('.array-elem-input');
-            for (let inp of allInputs) inp.value = '0';
-        }
-        // mostrar información de rango sugerido
-        infoRangeSpan.innerHTML = `✅ Rango sugerido: 0 - 99 (aleatorios) · total elementos: ${size}`;
+        
+        // Mostrar secciones
+        arraySection.style.display = 'block';
+        resultSection.style.display = 'flex';
+        randomGroup.style.display = 'flex';
+        sortGroup.style.display = 'flex';
+        
+        infoStatsSpan.innerHTML = `Arreglo generado: ${size} elementos (rango 1-500). Puede editar o usar aleatorios.`;
+        sortedDisplaySpan.innerHTML = "[ sin ordenar ]";
+        hideError();
     }
     
-    // Llenar todos los campos actuales con números aleatorios (0-99)
-    function fillCurrentWithRandom() {
+    // Llenar todos los inputs actuales con valores aleatorios (1 a 500)
+    function fillWithRandomValues() {
         const inputs = document.querySelectorAll('.array-elem-input');
         if (inputs.length === 0) {
-            showError("Primero genera los campos usando el botón 'Generar campos'");
+            showError("Primero genere el arreglo (Boton GENERAR ARREGLO)");
             return false;
         }
         for (let inp of inputs) {
-            const randomVal = Math.floor(Math.random() * 100); // 0..99
+            let randomVal = Math.floor(Math.random() * 500) + 1; // 1..500
             inp.value = randomVal;
         }
-        clearError();
-        // después de llenar aleatorios, limpiamos resultado anterior
-        sortedDisplay.innerHTML = '— nuevo arreglo, presiona ordenar —';
+        hideError();
+        sortedDisplaySpan.innerHTML = "[ valores aleatorios asignados, presione ORDENAR ]";
+        infoStatsSpan.innerHTML = `Nuevos valores aleatorios (1-500). Total elementos: ${inputs.length}`;
         return true;
     }
     
-    // Acción de ordenamiento principal
-    function performSort() {
-        clearError();
-        const inputsCount = document.querySelectorAll('.array-elem-input').length;
-        if (inputsCount === 0) {
-            showError("No hay elementos definidos. Use 'Generar campos' primero.");
-            return;
-        }
-        
-        const result = getCurrentArray();
-        if (result.error) {
-            showError(result.message);
-            return;
-        }
-        
-        const originalArr = result.array;
-        if (originalArr.length === 0) {
-            sortedDisplay.innerHTML = '[] (arreglo vacío)';
-            return;
-        }
-        
-        try {
-            const sortedArray = countingSort(originalArr);
-            // Mostrar resultado bonito
-            const originalStr = originalArr.join(', ');
-            const sortedStr = sortedArray.join(', ');
-            sortedDisplay.innerHTML = `📊 Original: [${originalStr}]<br>✅ Ordenado: [${sortedStr}]`;
-            // Mostrar datos adicionales: max, rango (opcional)
-            const maxVal = Math.max(...originalArr);
-            infoRangeSpan.innerHTML = `📐 Máximo valor: ${maxVal} · Tamaño conteo: ${maxVal+1} · Elementos: ${originalArr.length}`;
-        } catch (err) {
-            showError(err.message);
-            sortedDisplay.innerHTML = '— error en ordenamiento —';
-        }
-    }
-    
-    // Eventos y sincronización
+    // Eventos principales
     createBtn.addEventListener('click', () => {
         let newSize = parseInt(sizeInput.value, 10);
         if (isNaN(newSize) || newSize < 1) {
-            showError("Cantidad inválida, debe ser al menos 1.");
-            newSize = 1;
-            sizeInput.value = 1;
+            showError("Cantidad invalida. Debe ser un numero entre 1 y 100.");
+            newSize = 5;
+            sizeInput.value = 5;
         }
-        if (newSize > 40) {
-            showError("Máximo 40 elementos por claridad visual.");
-            newSize = 40;
-            sizeInput.value = 40;
+        if (newSize > 100) {
+            showError("Maximo 100 elementos permitidos.");
+            newSize = 100;
+            sizeInput.value = 100;
         }
-        generateInputFields(newSize, true);   // true para llenar con valores aleatorios como experiencia
-        clearError();
-        sortedDisplay.innerHTML = '— nuevo arreglo, puedes editar o usar aleatorio —';
-        infoRangeSpan.innerHTML = `🎲 Nueva configuración · ${newSize} elementos.`;
+        generateInputFields(newSize, true);
     });
     
     randomizeBtn.addEventListener('click', () => {
-        const success = fillCurrentWithRandom();
-        if (success) {
-            // limpiar mensaje de resultado, no auto ordenar
-            sortedDisplay.innerHTML = '🎲 Valores aleatorios aplicados. Presiona "Counting Sort" para ordenar.';
-            clearError();
-        }
+        fillWithRandomValues();
     });
     
     sortBtn.addEventListener('click', () => {
-        performSort();
+        updateSortedDisplay();
     });
     
-    // Inicializar página por defecto: cargar con tamaño 6 y valores aleatorios
+    // Inicializacion: mostrar solo el panel de cantidad y boton generar
     function init() {
-        const defaultSize = 6;
-        sizeInput.value = defaultSize;
-        generateInputFields(defaultSize, true);   // campos con valores aleatorios 0-99
-        sortedDisplay.innerHTML = '— esperando ordenar —';
-        clearError();
-        infoRangeSpan.innerHTML = `✨ Arreglo inicial con ${defaultSize} elementos aleatorios.✨`;
+        // Ocultar secciones al inicio
+        arraySection.style.display = 'none';
+        resultSection.style.display = 'none';
+        randomGroup.style.display = 'none';
+        sortGroup.style.display = 'none';
+        
+        // Valor por defecto
+        sizeInput.value = 10;
+        
+        // Mensaje dentro del contenedor de inputs mientras esta oculto
+        inputsContainer.innerHTML = '<div class="initial-message">Configure la cantidad de elementos y presione "GENERAR ARREGLO"</div>';
+        
+        // Asegurar que no haya errores visibles
+        hideError();
     }
     
-    // Si se presiona enter en el campo tamaño, se puede regenerar? no necesario pero intuitivo
+    // Si se presiona Enter en tamaño, generar arreglo
     sizeInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -611,8 +584,6 @@ int main() {
         }
     });
     
-    // Evento opcional: validación en tiempo real en inputs para que no tengan valores no numéricos,
-    // pero ya se valida en getCurrentArray, mejor dejarlo suave.
     init();
 </script>
 </body>
