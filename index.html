@@ -1,10 +1,3 @@
-Tienes razón, mi respuesta anterior condensó y omitió secciones de lógica de validación, estilos específicos y manejo de eventos que estaban en tu archivo original. Al intentar "limpiar" el código para la explicación, eliminé la robustez que ya habías programado.
-
-Aquí tienes el código **íntegro**, respetando cada línea de tu CSS, manteniendo todos tus comentarios de sección y asegurando que no se pierda ni un solo detalle de la lógica de "Unique Random Numbers" ni del manejo de errores de PBRT o estados de visualización. 
-
-He aplicado el cambio de variables a **español** en la sección de lógica y DOM como solicitaste, sin borrar nada.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -293,7 +286,7 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
 <body>
 <div class="header">
     <h1>COUNTING SORT ALGORITHM</h1>
-    <p>Ordenamiento lineal por conteo | Enteros positivos sin repeticion (1 a 500)</p>
+    <p>Ordenamiento lineal por conteo | Enteros positivos (1 a 500) | Permite repeticiones</p>
 </div>
 
 <div class="main-content">
@@ -317,7 +310,7 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
     </div>
 
     <div class="array-section">
-        <div class="array-title">ARREGLO DE ENTEROS (1 a 500) - SIN REPETICIONES</div>
+        <div class="array-title">ARREGLO DE ENTEROS (1 a 500) - CON REPETICIONES PERMITIDAS</div>
         <div class="inputs-wrapper">
             <div id="inputsContainer" class="inputs-grid">
                 <div class="initial-message">Configure la cantidad y presione "GENERAR ARREGLO"</div>
@@ -341,7 +334,7 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
 
 <script>
     // --------------------------------------------------------------
-    // ALGORITMO COUNTING SORT
+    // ALGORITMO COUNTING SORT (SOPORTA REPETICIONES)
     // --------------------------------------------------------------
     function algoritmoCountingSort(arregloEntrada) {
         if (!Array.isArray(arregloEntrada)) throw new Error("El arreglo no es valido");
@@ -362,10 +355,12 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
         let valorMaximo = Math.max(...arregloEntrada);
         let arregloConteo = new Array(valorMaximo + 1).fill(0);
         
+        // Fase de Conteo: Se incrementa el contador por cada ocurrencia
         for (let i = 0; i < arregloEntrada.length; i++) {
             arregloConteo[arregloEntrada[i]]++;
         }
         
+        // Fase de Reconstruccion: Se extraen los valores segun su frecuencia
         let resultadoOrdenado = [];
         for (let valor = 1; valor <= valorMaximo; valor++) {
             while (arregloConteo[valor] > 0) {
@@ -377,24 +372,15 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
     }
     
     // --------------------------------------------------------------
-    // GENERAR NUMEROS UNICOS (SIN REPETICIONES)
+    // GENERAR NUMEROS ALEATORIOS (CON REPETICIONES)
     // --------------------------------------------------------------
-    function obtenerNumerosAleatoriosUnicos(cantidad, valorMin, valorMax) {
-        if (cantidad > (valorMax - valorMin + 1)) {
-            throw new Error(`No se pueden generar ${cantidad} numeros unicos. Maximo: ${valorMax - valorMin + 1}`);
+    function obtenerNumerosAleatorios(cantidad, valorMin, valorMax) {
+        const numeros = [];
+        for (let i = 0; i < cantidad; i++) {
+            const num = Math.floor(Math.random() * (valorMax - valorMin + 1)) + valorMin;
+            numeros.push(num);
         }
-        
-        const disponibles = [];
-        for (let i = valorMin; i <= valorMax; i++) {
-            disponibles.push(i);
-        }
-        
-        for (let i = disponibles.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [disponibles[i], disponibles[j]] = [disponibles[j], disponibles[i]];
-        }
-        
-        return disponibles.slice(0, cantidad);
+        return numeros;
     }
     
     // --------------------------------------------------------------
@@ -483,7 +469,7 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
             const ordenadoStr = arregloOrdenado.join(", ");
             visualizacionOrdenada.innerHTML = `ORIGINAL: [ ${originalStr} ]<br>ORDENADO: [ ${ordenadoStr} ]`;
             const tieneRepetidos = new Set(arregloOriginal).size !== arregloOriginal.length;
-            estadisticasInfo.innerHTML = `Min: ${minOriginal} | Max: ${maxOriginal} | Elementos: ${arregloOriginal.length} | Unicos: ${tieneRepetidos ? 'NO' : 'SI'}`;
+            estadisticasInfo.innerHTML = `Min: ${minOriginal} | Max: ${maxOriginal} | Elementos: ${arregloOriginal.length} | Repetidos: ${tieneRepetidos ? 'SÍ' : 'NO'}`;
             
             contenedorBotonAnimacion.style.display = 'flex';
         } catch (err) {
@@ -502,14 +488,8 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
             inputTamano.value = maximoPermitido;
         }
         
-        let numerosUnicos;
-        try {
-            numerosUnicos = obtenerNumerosAleatoriosUnicos(tamanoFinal, 1, 500);
-        } catch (err) {
-            mostrarError(err.message);
-            numerosUnicos = [];
-            for (let i = 1; i <= tamanoFinal; i++) numerosUnicos.push(i);
-        }
+        // Generacion con repeticiones permitidas
+        const numerosAleatorios = obtenerNumerosAleatorios(tamanoFinal, 1, 500);
         
         contenedorEntradas.innerHTML = '';
         for (let i = 0; i < tamanoFinal; i++) {
@@ -522,40 +502,38 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
             elemInput.step = '1';
             elemInput.min = '1';
             elemInput.max = '500';
-            elemInput.value = numerosUnicos[i];
+            elemInput.value = numerosAleatorios[i];
             elemInput.className = 'array-elem-input';
             envoltorio.appendChild(spanIndice);
             envoltorio.appendChild(elemInput);
             contenedorEntradas.appendChild(envoltorio);
         }
         
-        estadisticasInfo.innerHTML = `Arreglo generado: ${tamanoFinal} elementos | UNICOS: SI (sin repeticiones)`;
+        const tieneRepetidos = new Set(numerosAleatorios).size !== numerosAleatorios.length;
+        estadisticasInfo.innerHTML = `Arreglo generado: ${tamanoFinal} elementos | REPETIDOS: ${tieneRepetidos ? 'SÍ' : 'NO'}`;
         visualizacionOrdenada.innerHTML = "[ sin ordenar ]";
         contenedorBotonAnimacion.style.display = 'none';
         ocultarError();
     }
     
-    function llenarConAleatoriosUnicos() {
+    function llenarConAleatorios() {
         const entradas = document.querySelectorAll('.array-elem-input');
         if (entradas.length === 0) {
             mostrarError("Primero genere el arreglo.");
             return false;
         }
         const tamano = entradas.length;
-        try {
-            const nuevosValores = obtenerNumerosAleatoriosUnicos(tamano, 1, 500);
-            for (let i = 0; i < entradas.length; i++) {
-                entradas[i].value = nuevosValores[i];
-            }
-            ocultarError();
-            visualizacionOrdenada.innerHTML = "[ nuevos valores unicos asignados, presione ORDENAR ]";
-            estadisticasInfo.innerHTML = `Nuevos valores UNICOS (sin repeticiones). Total: ${tamano}`;
-            contenedorBotonAnimacion.style.display = 'none';
-            return true;
-        } catch (err) {
-            mostrarError(err.message);
-            return false;
+        
+        const nuevosValores = obtenerNumerosAleatorios(tamano, 1, 500);
+        for (let i = 0; i < entradas.length; i++) {
+            entradas[i].value = nuevosValores[i];
         }
+        ocultarError();
+        visualizacionOrdenada.innerHTML = "[ nuevos valores asignados, presione ORDENAR ]";
+        const tieneRepetidos = new Set(nuevosValores).size !== nuevosValores.length;
+        estadisticasInfo.innerHTML = `Nuevos valores (posibles repetidos). Total: ${tamano} | Repetidos: ${tieneRepetidos ? 'SÍ' : 'NO'}`;
+        contenedorBotonAnimacion.style.display = 'none';
+        return true;
     }
     
     function redirigirAAnimacion() {
@@ -587,7 +565,7 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
     });
     
     botonAleatorio.addEventListener('click', () => {
-        llenarConAleatoriosUnicos();
+        llenarConAleatorios();
     });
     
     botonOrdenar.addEventListener('click', () => {
@@ -615,4 +593,3 @@ He aplicado el cambio de variables a **español** en la sección de lógica y DO
 </script>
 </body>
 </html>
-```

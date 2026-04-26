@@ -2,487 +2,264 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Counting Sort | Animación automática del algoritmo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Animación Interactiva | Counting Sort</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --primary: #7918A1;
+            --accent: #ff00ff;
+            --bg: #ffffff;
+            --text: #000000;
         }
 
         body {
-            background: white;
-            font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
-            min-height: 100vh;
-            padding: 2rem;
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
         }
 
-        .container {
-            max-width: 1300px;
-            width: 100%;
-            background: white;
-            border: 3px solid black;
-            padding: 2rem;
-            box-shadow: 10px 10px 0 rgba(121, 24, 161, 0.2);
-        }
-
-        h1 {
-            font-size: 1.6rem;
-            margin-bottom: 0.5rem;
-            color: #7918A1;
-            border-left: 5px solid #7918A1;
-            padding-left: 1rem;
-        }
-
-        .subtitle {
-            margin-bottom: 2rem;
-            color: #444;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 0.5rem;
-        }
-
-        .arrays-panel {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .array-box {
-            flex: 1;
-            background: #f8f8f8;
-            border: 2px solid black;
-            padding: 1rem;
-        }
-
-        .array-title {
-            font-weight: 800;
-            font-size: 0.85rem;
-            margin-bottom: 0.8rem;
-            color: black;
+        h2 {
             text-transform: uppercase;
-            border-bottom: 2px solid #7918A1;
-            display: inline-block;
-            padding-bottom: 4px;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 5px;
+            margin-bottom: 30px;
         }
 
-        .array-values {
-            font-family: 'Fira Code', monospace;
-            font-size: 1rem;
-            font-weight: 700;
-            word-break: break-word;
-            line-height: 1.6;
-            background: white;
-            padding: 0.8rem;
-            border: 1px solid #ccc;
-        }
-
-        .algorithm-explanation {
-            background: #f0f0f0;
-            border: 2px solid black;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .phase-title {
-            font-weight: 800;
-            font-size: 0.9rem;
-            color: #7918A1;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-
-        .phase-description {
-            font-size: 0.85rem;
-            line-height: 1.5;
-            color: #333;
-        }
-
-        .animation-section {
-            background: #1a1a2e;
-            border: 2px solid black;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            min-height: 400px;
-        }
-
-        .step-visual {
-            background: #1a1a2e;
-        }
-
-        .step-description {
-            font-family: monospace;
-            font-size: 0.9rem;
-            background: #2d2f3a;
-            color: #f0f0f0;
-            border-left: 4px solid #7918A1;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        .bars-container {
+        /* Contenedores de Arreglos */
+        .array-container {
             display: flex;
+            gap: 10px;
             flex-wrap: wrap;
-            align-items: flex-end;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 2rem;
-            min-height: 200px;
+            min-height: 60px;
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            width: 90%;
         }
 
-        .bar {
-            background-color: #7918A1;
-            width: 55px;
-            transition: all 0.4s ease;
+        .element {
+            width: 45px;
+            height: 45px;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: white;
+            transition: all 0.3s ease;
             position: relative;
-            display: inline-block;
-            border: 1px solid white;
         }
 
-        .count-grid {
+        .element.active {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.2);
+            z-index: 10;
+        }
+
+        .element.sorted {
+            background: #e0e0e0;
+            border-color: var(--primary);
+        }
+
+        /* Contenedor de Cubetas (Frecuencia) */
+        .buckets-wrapper {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 5px;
+            overflow-x: auto;
+            width: 95%;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            border-bottom: 2px solid black;
+        }
+
+        .bucket {
+            min-width: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bucket-box {
+            width: 35px;
+            height: 35px;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid #444;
+            font-size: 0.8rem;
+            background: #f9f9f9;
         }
 
-        .count-cell {
-            background: #2d2f3a;
-            padding: 8px;
-            text-align: center;
-            min-width: 65px;
-            border: 1px solid #7918A1;
+        .bucket-box.highlight {
+            background: var(--accent);
+            color: white;
         }
 
-        .count-index {
-            font-size: 0.7rem;
-            color: #aaa;
+        .bucket-label {
+            font-size: 0.6rem;
+            margin-top: 5px;
+            font-weight: bold;
+            color: var(--primary);
         }
 
-        .count-value {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: #7918A1;
-        }
-
+        /* Controles */
         .controls {
+            margin-bottom: 20px;
             display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 1.5rem;
+            gap: 20px;
+            align-items: center;
         }
 
         button {
-            border: 2px solid black;
-            background: white;
+            padding: 10px 20px;
             font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            padding: 0.6rem 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
             cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s;
+            background: black;
+            color: white;
+            border: none;
         }
 
         button:hover {
-            background: #7918A1;
-            color: white;
-            border-color: #7918A1;
+            background: var(--primary);
         }
 
-        .animation-status {
-            text-align: center;
-            margin-top: 1rem;
-            font-family: monospace;
+        #status-text {
             font-weight: bold;
-            font-size: 0.85rem;
-            color: #7918A1;
+            color: var(--primary);
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 1.5rem;
-            color: #7918A1;
-            text-decoration: none;
+        .label-tag {
+            font-size: 0.8rem;
             font-weight: bold;
-            border: 1px solid #7918A1;
-            padding: 0.5rem 1rem;
-            transition: all 0.2s;
-        }
-
-        .back-link:hover {
-            background: #7918A1;
-            color: white;
+            margin-bottom: 10px;
+            align-self: flex-start;
+            margin-left: 5%;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>COUNTING SORT</h1>
-    <div class="subtitle">Animación automática | Visualización paso a paso del ordenamiento por conteo</div>
 
-    <div class="arrays-panel">
-        <div class="array-box">
-            <div class="array-title">ARREGLO ORIGINAL</div>
-            <div id="originalArrayDisplay" class="array-values">[ cargando... ]</div>
-        </div>
-        <div class="array-box">
-            <div class="array-title">ARREGLO ORDENADO</div>
-            <div id="sortedArrayDisplay" class="array-values">[ procesando... ]</div>
-        </div>
-    </div>
-
-    <div class="algorithm-explanation" id="explicacionBox">
-        <div class="phase-title" id="tituloFase">FASE 1: ANALIZANDO DATOS</div>
-        <div class="phase-description" id="descripcionFase">Preparando el proceso de ordenamiento...</div>
-    </div>
-
-    <div class="animation-section">
-        <div id="descripcionPaso" class="step-description">Inicializando animación...</div>
-        <div id="areaVisualizacion" class="step-visual">
-            <div class="bars-container" id="contenedorBarras"></div>
-            <div id="areaConteo" class="count-grid"></div>
-        </div>
-        <div class="animation-status" id="estadoAnimacion">▶ Animación en curso</div>
-    </div>
+    <h2>Visualización paso a paso: Counting Sort</h2>
 
     <div class="controls">
-        <button id="btnReiniciar">REINICIAR ANIMACIÓN</button>
-        <button id="btnPausaPlay">PAUSAR</button>
+        <button id="startBtn">Iniciar Animación</button>
+        <button onclick="window.location.reload()">Reiniciar</button>
+        <span id="status-text">Listo para comenzar</span>
     </div>
 
-    <a href="https://fabianayala1903353g.github.io/CountingSort/" class="back-link">← Volver al ordenador principal</a>
-</div>
+    <div class="label-tag">ARREGLO ORIGINAL:</div>
+    <div id="input-array" class="array-container"></div>
 
-<script>
-    // --------------------------------------------------------------
-    // CONFIGURACIÓN INICIAL Y DATOS
-    // --------------------------------------------------------------
-    const parametrosURL = new URLSearchParams(window.location.search);
-    let arregloOriginal = [];
-    const parametroArr = parametrosURL.get('arr');
-    
-    if (parametroArr) {
-        try {
-            arregloOriginal = JSON.parse(decodeURIComponent(parametroArr));
-        } catch(e) {
-            arregloOriginal = [5, 2, 9, 1, 7, 3];
-        }
-    } else {
-        arregloOriginal = [5, 2, 9, 1, 7, 3];
-    }
-    
-    arregloOriginal = arregloOriginal.filter(n => typeof n === 'number' && !isNaN(n));
-    if (arregloOriginal.length === 0) arregloOriginal = [5, 2, 9, 1, 7, 3];
-    
-    document.getElementById('originalArrayDisplay').innerHTML = `[ ${arregloOriginal.join(', ')} ]`;
-    
-    let pasosAnimacion = [];
-    let indicePasoActual = 0;
-    let intervaloAnimacion = null;
-    let estaReproduciendo = true;
-    const valorMaximoArreglo = Math.max(...arregloOriginal);
-    
-    // --------------------------------------------------------------
-    // GENERADOR DE PASOS (LÓGICA DEL ALGORITMO)
-    // --------------------------------------------------------------
-    function generarPasosAnimacion(datos) {
-        const pasos = [];
-        const n = datos.length;
-        const maxVal = Math.max(...datos);
-        
-        // Paso Inicial
-        pasos.push({
-            tipo: 'inicio',
-            arreglo: [...datos],
-            conteo: null,
-            max: maxVal,
-            fase: 'INICIO',
-            desc: `Arreglo original detectado con valor máximo: ${maxVal}`,
-            detalle: `Se requiere un arreglo de conteo de tamaño ${maxVal + 1}.`
-        });
-        
-        let conteo = new Array(maxVal + 1).fill(0);
-        
-        // Fase de Conteo
-        for (let i = 0; i < n; i++) {
-            const num = datos[i];
-            conteo[num]++;
-            pasos.push({
-                tipo: 'contando',
-                arreglo: [...datos],
-                conteo: [...conteo],
-                indiceActual: i,
-                valorActual: num,
-                max: maxVal,
-                fase: 'CONTEO DE FRECUENCIAS',
-                desc: `Leyendo el número ${num}. Incrementando contador en la posición ${num}.`,
-                detalle: `Ahora el valor ${num} se ha encontrado ${conteo[num]} vez/veces.`
+    <div class="label-tag">CUBETAS DE CONTEO (Índices representan los valores):</div>
+    <div id="buckets-container" class="buckets-wrapper"></div>
+
+    <div class="label-tag">ARREGLO RESULTANTE (ORDENADO):</div>
+    <div id="output-array" class="array-container"></div>
+
+    <script>
+        // Obtener datos de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataRaw = urlParams.get('arr');
+        let array = dataRaw ? JSON.parse(decodeURIComponent(dataRaw)) : [5, 2, 8, 2, 1];
+
+        const maxVal = Math.max(...array);
+        const inputContainer = document.getElementById('input-array');
+        const bucketsContainer = document.getElementById('buckets-container');
+        const outputContainer = document.getElementById('output-array');
+        const statusText = document.getElementById('status-text');
+        const startBtn = document.getElementById('startBtn');
+
+        // Inicializar interfaz
+        function init() {
+            // Arreglo inicial
+            array.forEach((val, i) => {
+                const div = document.createElement('div');
+                div.className = 'element';
+                div.textContent = val;
+                div.id = `input-${i}`;
+                inputContainer.appendChild(div);
             });
-        }
-        
-        // Fase de Reconstrucción
-        let ordenado = [];
-        let copiaConteo = [...conteo];
-        
-        for (let v = 1; v <= maxVal; v++) {
-            while (copiaConteo[v] > 0) {
-                ordenado.push(v);
-                copiaConteo[v]--;
-                pasos.push({
-                    tipo: 'reconstruccion',
-                    arreglo: [...datos],
-                    arregloOrdenado: [...ordenado],
-                    valorActual: v,
-                    conteo: [...copiaConteo],
-                    max: maxVal,
-                    fase: 'RECONSTRUYENDO ARREGLO',
-                    desc: `Extrayendo valor ${v} del arreglo de conteo.`,
-                    detalle: `Colocando ${v} en la siguiente posición disponible del arreglo final.`
-                });
+
+            // Cubetas (de 1 hasta Max)
+            for (let i = 1; i <= maxVal; i++) {
+                const bucket = document.createElement('div');
+                bucket.className = 'bucket';
+                bucket.innerHTML = `
+                    <div class="bucket-box" id="bucket-${i}">0</div>
+                    <div class="bucket-label">${i}</div>
+                `;
+                bucketsContainer.appendChild(bucket);
             }
         }
-        
-        pasos.push({
-            tipo: 'final',
-            arreglo: [...datos],
-            arregloOrdenado: [...ordenado],
-            max: maxVal,
-            fase: 'COMPLETADO',
-            desc: `¡Ordenamiento finalizado con éxito!`,
-            detalle: `El arreglo ha sido procesado en tiempo O(n + k).`
-        });
-        
-        return pasos;
-    }
-    
-    pasosAnimacion = generarPasosAnimacion(arregloOriginal);
-    document.getElementById('sortedArrayDisplay').innerHTML = `[ ${pasosAnimacion[pasosAnimacion.length-1].arregloOrdenado?.join(', ') || '...'} ]`;
 
-    // --------------------------------------------------------------
-    // MOTOR DE RENDERIZADO
-    // --------------------------------------------------------------
-    function renderizarPaso() {
-        const paso = pasosAnimacion[indicePasoActual];
-        if (!paso) return;
-        
-        document.getElementById('tituloFase').textContent = `FASE: ${paso.fase}`;
-        document.getElementById('descripcionFase').innerHTML = `<strong>${paso.desc}</strong><br><small>${paso.detalle}</small>`;
-        document.getElementById('descripcionPaso').innerHTML = `📌 ${paso.desc}`;
-        
-        const contenedorBarras = document.getElementById('contenedorBarras');
-        const areaConteo = document.getElementById('areaConteo');
-        const alturaMaxima = 200;
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        // Limpiar para redibujar
-        contenedorBarras.innerHTML = '';
-        
-        if (paso.tipo === 'inicio' || paso.tipo === 'contando') {
-            paso.arreglo.forEach((val, idx) => {
-                const barra = crearBarra(val, paso.max, alturaMaxima, paso.indiceActual === idx ? '#e67e22' : '#7918A1');
-                contenedorBarras.appendChild(barra);
-            });
-        } else if (paso.tipo === 'reconstruccion' || paso.tipo === 'final') {
-            const arrAMostrar = paso.arregloOrdenado || [];
-            arrAMostrar.forEach(val => {
-                const barra = crearBarra(val, paso.max, alturaMaxima, '#2ecc71');
-                contenedorBarras.appendChild(barra);
-            });
-        }
+        async function startAnimation() {
+            startBtn.disabled = true;
+            const counts = new Array(maxVal + 1).fill(0);
 
-        // Dibujar Arreglo de Conteo
-        if (paso.conteo) {
-            areaConteo.innerHTML = '';
-            for (let i = 1; i <= paso.max; i++) {
-                const esActivo = paso.valorActual === i;
-                const celda = document.createElement('div');
-                celda.className = 'count-cell';
-                if (esActivo) celda.style.borderColor = '#e67e22';
-                celda.innerHTML = `<div class="count-index">Val ${i}</div><div class="count-value">${paso.conteo[i]}</div>`;
-                areaConteo.appendChild(celda);
+            // PASO 1: CONTEO
+            statusText.textContent = "Fase 1: Contando frecuencias...";
+            for (let i = 0; i < array.length; i++) {
+                const val = array[i];
+                const el = document.getElementById(`input-${i}`);
+                const bucket = document.getElementById(`bucket-${val}`);
+
+                el.classList.add('active');
+                await sleep(600);
+
+                counts[val]++;
+                bucket.textContent = counts[val];
+                bucket.classList.add('highlight');
+                
+                await sleep(600);
+                el.classList.remove('active');
+                el.classList.add('sorted');
+                bucket.classList.remove('highlight');
             }
-        } else if (paso.tipo === 'final') {
-            areaConteo.innerHTML = '<div style="color:#2ecc71; font-weight:bold;">ORDENAMIENTO FINALIZADO</div>';
-        }
 
-        // Actualizar estados
-        const status = document.getElementById('estadoAnimacion');
-        if (indicePasoActual === pasosAnimacion.length - 1) {
-            status.innerHTML = '✅ Proceso terminado';
-            detenerIntervalo();
-        } else {
-            status.innerHTML = estaReproduciendo ? '▶ Reproduciendo automáticamente...' : '⏸ Pausado';
-        }
-    }
+            await sleep(1000);
 
-    function crearBarra(valor, max, hMax, color) {
-        const div = document.createElement('div');
-        div.className = 'bar';
-        const calculoAltura = (valor / max) * hMax;
-        div.style.height = `${Math.max(40, calculoAltura)}px`;
-        div.style.backgroundColor = color;
-        div.innerHTML = `<div style="text-align:center; color:white; font-weight:bold; margin-top:5px;">${valor}</div>`;
-        return div;
-    }
+            // PASO 2: RECONSTRUCCIÓN
+            statusText.textContent = "Fase 2: Reconstruyendo arreglo ordenado...";
+            for (let i = 1; i <= maxVal; i++) {
+                if (counts[i] > 0) {
+                    const bucket = document.getElementById(`bucket-${i}`);
+                    bucket.classList.add('highlight');
 
-    // --------------------------------------------------------------
-    // CONTROL DE TIEMPO (AUTOMÁTICO)
-    // --------------------------------------------------------------
-    function iniciarIntervalo() {
-        detenerIntervalo();
-        intervaloAnimacion = setInterval(() => {
-            if (indicePasoActual < pasosAnimacion.length - 1) {
-                indicePasoActual++;
-                renderizarPaso();
-            } else {
-                detenerIntervalo();
+                    while (counts[i] > 0) {
+                        statusText.textContent = `Extrayendo valor ${i}... (${counts[i]} restantes)`;
+                        
+                        const outEl = document.createElement('div');
+                        outEl.className = 'element active';
+                        outEl.textContent = i;
+                        outputContainer.appendChild(outEl);
+
+                        await sleep(600);
+                        outEl.classList.remove('active');
+                        
+                        counts[i]--;
+                        bucket.textContent = counts[i];
+                        await sleep(400);
+                    }
+                    bucket.classList.remove('highlight');
+                }
             }
-        }, 1800); // 1.8 segundos por transición
-    }
 
-    function detenerIntervalo() {
-        if (intervaloAnimacion) {
-            clearInterval(intervaloAnimacion);
-            intervaloAnimacion = null;
+            statusText.textContent = "¡Ordenamiento completado!";
         }
-    }
 
-    // --------------------------------------------------------------
-    // EVENTOS
-    // --------------------------------------------------------------
-    document.getElementById('btnReiniciar').addEventListener('click', () => {
-        indicePasoActual = 0;
-        estaReproduciendo = true;
-        document.getElementById('btnPausaPlay').textContent = 'PAUSAR';
-        renderizarPaso();
-        iniciarIntervalo();
-    });
-
-    document.getElementById('btnPausaPlay').addEventListener('click', function() {
-        if (estaReproduciendo) {
-            detenerIntervalo();
-            this.textContent = 'REANUDAR';
-        } else {
-            iniciarIntervalo();
-            this.textContent = 'PAUSAR';
-        }
-        estaReproduciendo = !estaReproduciendo;
-        renderizarPaso();
-    });
-
-    // Inicio automático
-    renderizarPaso();
-    iniciarIntervalo();
-</script>
+        startBtn.addEventListener('click', startAnimation);
+        init();
+    </script>
 </body>
 </html>
