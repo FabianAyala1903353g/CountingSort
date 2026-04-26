@@ -1,151 +1,146 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Animación Interactiva | Counting Sort</title>
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Animación Interactiva | Counting Sort</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #7918A1;
+            --bg: #ffffff;
+            --text: #000000;
+        }
 
-<style>
-:root {
-    --primary: #7918A1;
-    --bg: #ffffff;
-    --text: #000000;
-}
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-body {
-    font-family: 'Fira Code', monospace;
-    background-color: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        h2 {
+            text-transform: uppercase;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 5px;
+            margin-bottom: 30px;
+        }
 
-h2 {
-    text-transform: uppercase;
-    border-bottom: 4px solid var(--primary);
-    padding-bottom: 5px;
-    margin-bottom: 30px;
-}
+        .array-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            min-height: 60px;
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid black;
+            background: #f8f8f8;
+            width: 90%;
+        }
 
-/* Arreglos */
-.array-container {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    min-height: 60px;
-    margin-bottom: 40px;
-    padding: 20px;
-    border: 2px solid black;
-    background: #f8f8f8;
-    width: 90%;
-}
+        .element {
+            width: 45px;
+            height: 45px;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            background: white;
+            transition: all 0.3s ease;
+        }
 
-.element {
-    width: 45px;
-    height: 45px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    background: white;
-    transition: all 0.3s ease;
-}
+        .element.active {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.2);
+        }
 
-.element.active {
-    background: var(--primary);
-    color: white;
-    transform: scale(1.2);
-}
+        .element.sorted {
+            background: #e0e0e0;
+        }
 
-.element.sorted {
-    background: #e0e0e0;
-}
+        .contadors-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 8px;
+            width: 95%;
+            padding: 20px;
+            margin-bottom: 40px;
+            border: 2px solid black;
+        }
 
-/* Contadores */
-.contadors-wrapper {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
-    gap: 8px;
-    width: 95%;
-    padding: 20px;
-    margin-bottom: 40px;
-    border: 2px solid black;
-}
+        .contador {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.contador {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .contador-box {
+            width: 35px;
+            height: 35px;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            background: white;
+            font-weight: 800;
+        }
 
-.contador-box {
-    width: 35px;
-    height: 35px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    background: white;
-    font-weight: 800;
-}
+        .contador-box.highlight {
+            background: var(--primary);
+            color: white;
+        }
 
-.contador-box.highlight {
-    background: var(--primary);
-    color: white;
-}
+        .contador-label {
+            font-size: 0.6rem;
+            margin-top: 5px;
+            font-weight: bold;
+            color: var(--primary);
+        }
 
-.contador-label {
-    font-size: 0.6rem;
-    margin-top: 5px;
-    font-weight: bold;
-    color: var(--primary);
-}
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-/* Controles */
-.controls {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    flex-wrap: wrap;
-}
+        button {
+            padding: 10px 20px;
+            font-family: 'Fira Code', monospace;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            background: black;
+            color: white;
+            border: none;
+        }
 
-button {
-    padding: 10px 20px;
-    font-family: 'Fira Code', monospace;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    background: black;
-    color: white;
-    border: none;
-}
+        button:hover {
+            background: var(--primary);
+        }
 
-button:hover {
-    background: var(--primary);
-}
+        #status-text {
+            font-weight: bold;
+            color: var(--primary);
+        }
 
-#status-text {
-    font-weight: bold;
-    color: var(--primary);
-}
-
-.label-tag {
-    font-size: 0.8rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    align-self: flex-start;
-    margin-left: 5%;
-}
-</style>
+        .label-tag {
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            align-self: flex-start;
+            margin-left: 5%;
+        }
+    </style>
 </head>
-
 <body>
 
 <h2>Visualización paso a paso: Counting Sort</h2>
@@ -157,6 +152,7 @@ button:hover {
 
     <label>Velocidad:</label>
     <input type="range" id="speedSlider" min="50" max="1000" step="50" value="500">
+    <span id="speedValue">Velocidad: 50%</span>
 
     <span id="status-text">Listo</span>
 </div>
@@ -184,23 +180,32 @@ const outputContainer = document.getElementById('output-array');
 const startBtn = document.getElementById('startBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const statusText = document.getElementById('status-text');
-const speedSlider = document.getElementById('speedSlider');
 
+const speedSlider = document.getElementById('speedSlider');
+const speedValue = document.getElementById('speedValue');
+
+// velocidad invertida desde el inicio
 let speed = 1050 - parseInt(speedSlider.value);
 let paused = false;
 
-/* velocidad dinámica (invertida correctamente) */
+// texto inicial correcto
+speedValue.textContent = "Velocidad: " + (parseInt(speedSlider.value)/10).toFixed(0) + "%";
+
+// actualizar velocidad
 speedSlider.addEventListener('input', () => {
-    speed = 1050 - parseInt(speedSlider.value);
+    let raw = parseInt(speedSlider.value);
+    speed = 1050 - raw;
+
+    speedValue.textContent = "";
 });
 
-/* pausa */
+// pausa
 pauseBtn.addEventListener('click', () => {
     paused = !paused;
     pauseBtn.textContent = paused ? "Continuar" : "Pausar";
 });
 
-/* sleep dinámico */
+// sleep dinámico
 const sleep = () => new Promise(resolve => {
     const check = () => {
         if (!paused) {
