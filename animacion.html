@@ -147,17 +147,6 @@
             border: 1px solid white;
         }
 
-        .bar-label {
-            position: absolute;
-            bottom: -28px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 13px;
-            color: white;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
         .count-grid {
             display: flex;
             flex-wrap: wrap;
@@ -235,23 +224,6 @@
             background: #7918A1;
             color: white;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(0.98); }
-        }
-
-        .highlight {
-            animation: pulse 0.5s ease;
-        }
-
-        @media (max-width: 700px) {
-            body { padding: 1rem; }
-            .container { padding: 1rem; }
-            .bar { width: 35px; }
-            .bar-label { font-size: 10px; bottom: -22px; }
-            .count-cell { min-width: 50px; }
-        }
     </style>
 </head>
 <body>
@@ -270,388 +242,247 @@
         </div>
     </div>
 
-    <div class="algorithm-explanation" id="explanationBox">
-        <div class="phase-title" id="phaseTitle">FASE 1: ENCONTRAR EL MÁXIMO</div>
-        <div class="phase-description" id="phaseDescription">Buscando el valor máximo en el arreglo...</div>
+    <div class="algorithm-explanation" id="explicacionBox">
+        <div class="phase-title" id="tituloFase">FASE 1: ANALIZANDO DATOS</div>
+        <div class="phase-description" id="descripcionFase">Preparando el proceso de ordenamiento...</div>
     </div>
 
     <div class="animation-section">
-        <div id="stepDescription" class="step-description">Inicializando animación...</div>
-        <div id="visualizationArea" class="step-visual">
-            <div class="bars-container" id="barsContainer"></div>
-            <div id="countArea" class="count-grid"></div>
+        <div id="descripcionPaso" class="step-description">Inicializando animación...</div>
+        <div id="areaVisualizacion" class="step-visual">
+            <div class="bars-container" id="contenedorBarras"></div>
+            <div id="areaConteo" class="count-grid"></div>
         </div>
-        <div class="animation-status" id="animationStatus">▶ Animación en curso</div>
+        <div class="animation-status" id="estadoAnimacion">▶ Animación en curso</div>
     </div>
 
     <div class="controls">
-        <button id="resetBtn">REINICIAR ANIMACIÓN</button>
-        <button id="pausePlayBtn">PAUSAR</button>
+        <button id="btnReiniciar">REINICIAR ANIMACIÓN</button>
+        <button id="btnPausaPlay">PAUSAR</button>
     </div>
 
     <a href="https://fabianayala1903353g.github.io/CountingSort/" class="back-link">← Volver al ordenador principal</a>
 </div>
 
 <script>
-    // Obtener datos de la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    let originalArray = [];
-    const arrayParam = urlParams.get('arr');
+    // --------------------------------------------------------------
+    // CONFIGURACIÓN INICIAL Y DATOS
+    // --------------------------------------------------------------
+    const parametrosURL = new URLSearchParams(window.location.search);
+    let arregloOriginal = [];
+    const parametroArr = parametrosURL.get('arr');
     
-    if (arrayParam) {
+    if (parametroArr) {
         try {
-            originalArray = JSON.parse(decodeURIComponent(arrayParam));
+            arregloOriginal = JSON.parse(decodeURIComponent(parametroArr));
         } catch(e) {
-            originalArray = [5, 2, 9, 1, 7, 3];
+            arregloOriginal = [5, 2, 9, 1, 7, 3];
         }
     } else {
-        originalArray = [5, 2, 9, 1, 7, 3];
+        arregloOriginal = [5, 2, 9, 1, 7, 3];
     }
     
-    originalArray = originalArray.filter(n => typeof n === 'number' && !isNaN(n));
-    if (originalArray.length === 0) originalArray = [5, 2, 9, 1, 7, 3];
+    arregloOriginal = arregloOriginal.filter(n => typeof n === 'number' && !isNaN(n));
+    if (arregloOriginal.length === 0) arregloOriginal = [5, 2, 9, 1, 7, 3];
     
-    document.getElementById('originalArrayDisplay').innerHTML = `[ ${originalArray.join(', ')} ]`;
+    document.getElementById('originalArrayDisplay').innerHTML = `[ ${arregloOriginal.join(', ')} ]`;
     
-    // Variables de animación
-    let animationSteps = [];
-    let currentStepIndex = 0;
-    let animationInterval = null;
-    let isPlaying = true;
-    let maxValue = Math.max(...originalArray);
+    let pasosAnimacion = [];
+    let indicePasoActual = 0;
+    let intervaloAnimacion = null;
+    let estaReproduciendo = true;
+    const valorMaximoArreglo = Math.max(...arregloOriginal);
     
-    // Generar todos los pasos de la animación
-    function generateAnimationSteps(arr) {
-        const steps = [];
-        const n = arr.length;
-        const maxVal = Math.max(...arr);
+    // --------------------------------------------------------------
+    // GENERADOR DE PASOS (LÓGICA DEL ALGORITMO)
+    // --------------------------------------------------------------
+    function generarPasosAnimacion(datos) {
+        const pasos = [];
+        const n = datos.length;
+        const maxVal = Math.max(...datos);
         
-        // Paso 0: Mostrar arreglo original
-        steps.push({
-            type: 'initial',
-            array: [...arr],
-            countArray: null,
-            maxValue: maxVal,
-            phase: 'INICIO',
-            description: `Arreglo original: [${arr.join(', ')}]. Valor máximo: ${maxVal}`,
-            detail: `Counting Sort funcionará con valores entre 1 y ${maxVal}`
+        // Paso Inicial
+        pasos.push({
+            tipo: 'inicio',
+            arreglo: [...datos],
+            conteo: null,
+            max: maxVal,
+            fase: 'INICIO',
+            desc: `Arreglo original detectado con valor máximo: ${maxVal}`,
+            detalle: `Se requiere un arreglo de conteo de tamaño ${maxVal + 1}.`
         });
         
-        // Fase 1: Crear arreglo de conteo
-        let count = new Array(maxVal + 1).fill(0);
-        steps.push({
-            type: 'count_init',
-            array: [...arr],
-            countArray: [...count],
-            maxValue: maxVal,
-            phase: 'CREAR ARREGLO DE CONTEO',
-            description: `Se crea un arreglo de conteo de tamaño ${maxVal + 1} (índices 0-${maxVal}), inicializado en 0.`,
-            detail: `El índice representa cada posible valor, la casilla cuenta cuántas veces aparece.`
-        });
+        let conteo = new Array(maxVal + 1).fill(0);
         
-        // Fase 2: Contar cada elemento
+        // Fase de Conteo
         for (let i = 0; i < n; i++) {
-            const value = arr[i];
-            count[value]++;
-            steps.push({
-                type: 'counting',
-                array: [...arr],
-                countArray: [...count],
-                currentIndex: i,
-                currentValue: value,
-                maxValue: maxVal,
-                phase: 'CONTAR ELEMENTOS',
-                description: `Procesando elemento ${value} (posición ${i + 1}) → count[${value}] = ${count[value]}`,
-                detail: `Aumentamos el contador para el valor ${value}. Ahora aparece ${count[value]} vez/veces.`
+            const num = datos[i];
+            conteo[num]++;
+            pasos.push({
+                tipo: 'contando',
+                arreglo: [...datos],
+                conteo: [...conteo],
+                indiceActual: i,
+                valorActual: num,
+                max: maxVal,
+                fase: 'CONTEO DE FRECUENCIAS',
+                desc: `Leyendo el número ${num}. Incrementando contador en la posición ${num}.`,
+                detalle: `Ahora el valor ${num} se ha encontrado ${conteo[num]} vez/veces.`
             });
         }
         
-        // Fase 3: Conteo completado
-        steps.push({
-            type: 'count_done',
-            array: [...arr],
-            countArray: [...count],
-            maxValue: maxVal,
-            phase: 'CONTEO COMPLETADO',
-            description: `Se han contado todos los elementos. Ahora reconstruiremos el arreglo ordenado.`,
-            detail: `Cada count[valor] indica cuántas veces aparece ese número.`
-        });
+        // Fase de Reconstrucción
+        let ordenado = [];
+        let copiaConteo = [...conteo];
         
-        // Fase 4: Reconstrucción paso a paso
-        let sorted = [];
-        let countCopy = [...count];
-        
-        for (let val = 1; val <= maxVal; val++) {
-            while (countCopy[val] > 0) {
-                sorted.push(val);
-                countCopy[val]--;
-                steps.push({
-                    type: 'reconstruct',
-                    array: [...arr],
-                    sortedSoFar: [...sorted],
-                    currentValue: val,
-                    countArray: [...countCopy],
-                    maxValue: maxVal,
-                    phase: 'RECONSTRUYENDO',
-                    description: `Agregando ${val} al arreglo ordenado. Quedan ${countCopy[val]} en count[${val}].`,
-                    detail: `Arreglo ordenado parcial: [${sorted.join(', ')}]`
+        for (let v = 1; v <= maxVal; v++) {
+            while (copiaConteo[v] > 0) {
+                ordenado.push(v);
+                copiaConteo[v]--;
+                pasos.push({
+                    tipo: 'reconstruccion',
+                    arreglo: [...datos],
+                    arregloOrdenado: [...ordenado],
+                    valorActual: v,
+                    conteo: [...copiaConteo],
+                    max: maxVal,
+                    fase: 'RECONSTRUYENDO ARREGLO',
+                    desc: `Extrayendo valor ${v} del arreglo de conteo.`,
+                    detalle: `Colocando ${v} en la siguiente posición disponible del arreglo final.`
                 });
             }
         }
         
-        // Paso final
-        steps.push({
-            type: 'final',
-            array: [...arr],
-            sortedArray: [...sorted],
-            maxValue: maxVal,
-            phase: 'COMPLETADO',
-            description: `¡Arreglo completamente ordenado! Resultado: [${sorted.join(', ')}]`,
-            detail: `Counting Sort ha terminado. Complejidad O(n + k) donde k = valor máximo.`
+        pasos.push({
+            tipo: 'final',
+            arreglo: [...datos],
+            arregloOrdenado: [...ordenado],
+            max: maxVal,
+            fase: 'COMPLETADO',
+            desc: `¡Ordenamiento finalizado con éxito!`,
+            detalle: `El arreglo ha sido procesado en tiempo O(n + k).`
         });
         
-        return steps;
+        return pasos;
     }
     
-    animationSteps = generateAnimationSteps(originalArray);
-    document.getElementById('sortedArrayDisplay').innerHTML = `[ ${animationSteps[animationSteps.length-1].sortedArray?.join(', ') || 'procesando...'} ]`;
-    
-    // Renderizar el paso actual
-    function renderCurrentStep() {
-        const step = animationSteps[currentStepIndex];
-        if (!step) return;
+    pasosAnimacion = generarPasosAnimacion(arregloOriginal);
+    document.getElementById('sortedArrayDisplay').innerHTML = `[ ${pasosAnimacion[pasosAnimacion.length-1].arregloOrdenado?.join(', ') || '...'} ]`;
+
+    // --------------------------------------------------------------
+    // MOTOR DE RENDERIZADO
+    // --------------------------------------------------------------
+    function renderizarPaso() {
+        const paso = pasosAnimacion[indicePasoActual];
+        if (!paso) return;
         
-        // Actualizar explicación
-        document.getElementById('phaseTitle').textContent = `FASE: ${step.phase}`;
-        document.getElementById('phaseDescription').innerHTML = `<strong>${step.description}</strong><br><span style="font-size:0.8rem; color:#555;">${step.detail || ''}</span>`;
-        document.getElementById('stepDescription').innerHTML = `📌 ${step.description}`;
+        document.getElementById('tituloFase').textContent = `FASE: ${paso.fase}`;
+        document.getElementById('descripcionFase').innerHTML = `<strong>${paso.desc}</strong><br><small>${paso.detalle}</small>`;
+        document.getElementById('descripcionPaso').innerHTML = `📌 ${paso.desc}`;
         
-        const barsContainer = document.getElementById('barsContainer');
-        const countArea = document.getElementById('countArea');
+        const contenedorBarras = document.getElementById('contenedorBarras');
+        const areaConteo = document.getElementById('areaConteo');
+        const alturaMaxima = 200;
+
+        // Limpiar para redibujar
+        contenedorBarras.innerHTML = '';
         
-        // Renderizar según tipo de paso
-        if (step.type === 'initial' || step.type === 'counting' || step.type === 'count_init' || step.type === 'count_done') {
-            barsContainer.innerHTML = '';
-            const arrayToShow = step.array;
-            const maxHeight = 200;
-            const maxVal = step.maxValue;
-            
-            arrayToShow.forEach((value, idx) => {
-                const barDiv = document.createElement('div');
-                barDiv.style.position = 'relative';
-                barDiv.style.display = 'inline-block';
-                barDiv.style.margin = '0 6px';
-                const bar = document.createElement('div');
-                const heightPercent = (value / maxVal) * maxHeight;
-                bar.style.height = `${Math.max(40, heightPercent)}px`;
-                bar.style.width = '55px';
-                bar.style.backgroundColor = step.type === 'counting' && idx === step.currentIndex ? '#e67e22' : '#7918A1';
-                bar.style.border = '2px solid white';
-                bar.style.transition = 'all 0.3s ease';
-                const label = document.createElement('div');
-                label.textContent = value;
-                label.style.textAlign = 'center';
-                label.style.color = 'white';
-                label.style.fontSize = '14px';
-                label.style.fontWeight = 'bold';
-                label.style.marginTop = '8px';
-                bar.appendChild(label);
-                barDiv.appendChild(bar);
-                barsContainer.appendChild(barDiv);
+        if (paso.tipo === 'inicio' || paso.tipo === 'contando') {
+            paso.arreglo.forEach((val, idx) => {
+                const barra = crearBarra(val, paso.max, alturaMaxima, paso.indiceActual === idx ? '#e67e22' : '#7918A1');
+                contenedorBarras.appendChild(barra);
             });
-            
-            if (step.countArray) {
-                countArea.innerHTML = '<div style="width:100%; text-align:center; margin-bottom:12px; color:#aaa; font-weight:bold;">📊 ARREGLO DE CONTEO</div>';
-                const countGrid = document.createElement('div');
-                countGrid.style.display = 'flex';
-                countGrid.style.flexWrap = 'wrap';
-                countGrid.style.gap = '10px';
-                countGrid.style.justifyContent = 'center';
-                
-                for (let i = 1; i <= step.maxValue; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'count-cell';
-                    const isHighlighted = step.type === 'counting' && step.currentValue === i;
-                    cell.style.border = isHighlighted ? '2px solid #e67e22' : '1px solid #7918A1';
-                    cell.style.backgroundColor = isHighlighted ? '#3a3d4e' : '#2d2f3a';
-                    cell.innerHTML = `<div class="count-index">valor ${i}</div><div class="count-value">${step.countArray[i] || 0}</div>`;
-                    countGrid.appendChild(cell);
-                }
-                countArea.innerHTML = '';
-                countArea.appendChild(countGrid);
-            }
+        } else if (paso.tipo === 'reconstruccion' || paso.tipo === 'final') {
+            const arrAMostrar = paso.arregloOrdenado || [];
+            arrAMostrar.forEach(val => {
+                const barra = crearBarra(val, paso.max, alturaMaxima, '#2ecc71');
+                contenedorBarras.appendChild(barra);
+            });
         }
-        
-        else if (step.type === 'reconstruct') {
-            barsContainer.innerHTML = '';
-            const sortedSoFar = step.sortedSoFar || [];
-            const maxVal = step.maxValue;
-            const maxHeight = 200;
-            
-            if (sortedSoFar.length === 0) {
-                barsContainer.innerHTML = '<div style="color:#aaa; text-align:center; width:100%;">Construyendo arreglo ordenado...</div>';
+
+        // Dibujar Arreglo de Conteo
+        if (paso.conteo) {
+            areaConteo.innerHTML = '';
+            for (let i = 1; i <= paso.max; i++) {
+                const esActivo = paso.valorActual === i;
+                const celda = document.createElement('div');
+                celda.className = 'count-cell';
+                if (esActivo) celda.style.borderColor = '#e67e22';
+                celda.innerHTML = `<div class="count-index">Val ${i}</div><div class="count-value">${paso.conteo[i]}</div>`;
+                areaConteo.appendChild(celda);
+            }
+        } else if (paso.tipo === 'final') {
+            areaConteo.innerHTML = '<div style="color:#2ecc71; font-weight:bold;">ORDENAMIENTO FINALIZADO</div>';
+        }
+
+        // Actualizar estados
+        const status = document.getElementById('estadoAnimacion');
+        if (indicePasoActual === pasosAnimacion.length - 1) {
+            status.innerHTML = '✅ Proceso terminado';
+            detenerIntervalo();
+        } else {
+            status.innerHTML = estaReproduciendo ? '▶ Reproduciendo automáticamente...' : '⏸ Pausado';
+        }
+    }
+
+    function crearBarra(valor, max, hMax, color) {
+        const div = document.createElement('div');
+        div.className = 'bar';
+        const calculoAltura = (valor / max) * hMax;
+        div.style.height = `${Math.max(40, calculoAltura)}px`;
+        div.style.backgroundColor = color;
+        div.innerHTML = `<div style="text-align:center; color:white; font-weight:bold; margin-top:5px;">${valor}</div>`;
+        return div;
+    }
+
+    // --------------------------------------------------------------
+    // CONTROL DE TIEMPO (AUTOMÁTICO)
+    // --------------------------------------------------------------
+    function iniciarIntervalo() {
+        detenerIntervalo();
+        intervaloAnimacion = setInterval(() => {
+            if (indicePasoActual < pasosAnimacion.length - 1) {
+                indicePasoActual++;
+                renderizarPaso();
             } else {
-                sortedSoFar.forEach(value => {
-                    const barDiv = document.createElement('div');
-                    barDiv.style.position = 'relative';
-                    barDiv.style.display = 'inline-block';
-                    barDiv.style.margin = '0 6px';
-                    const bar = document.createElement('div');
-                    const heightPercent = (value / maxVal) * maxHeight;
-                    bar.style.height = `${Math.max(40, heightPercent)}px`;
-                    bar.style.width = '55px';
-                    bar.style.backgroundColor = '#2ecc71';
-                    bar.style.border = '2px solid white';
-                    bar.style.transition = 'all 0.3s ease';
-                    const label = document.createElement('div');
-                    label.textContent = value;
-                    label.style.textAlign = 'center';
-                    label.style.color = 'white';
-                    label.style.fontSize = '14px';
-                    label.style.fontWeight = 'bold';
-                    label.style.marginTop = '8px';
-                    bar.appendChild(label);
-                    barDiv.appendChild(bar);
-                    barsContainer.appendChild(barDiv);
-                });
+                detenerIntervalo();
             }
-            
-            if (step.countArray) {
-                countArea.innerHTML = '<div style="width:100%; text-align:center; margin-bottom:12px; color:#aaa; font-weight:bold;">📊 CONTADORES RESTANTES</div>';
-                const countGrid = document.createElement('div');
-                countGrid.style.display = 'flex';
-                countGrid.style.flexWrap = 'wrap';
-                countGrid.style.gap = '10px';
-                countGrid.style.justifyContent = 'center';
-                
-                for (let i = 1; i <= step.maxValue; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'count-cell';
-                    cell.innerHTML = `<div class="count-index">valor ${i}</div><div class="count-value">${step.countArray[i] || 0}</div>`;
-                    countGrid.appendChild(cell);
-                }
-                countArea.innerHTML = '';
-                countArea.appendChild(countGrid);
-            }
+        }, 1800); // 1.8 segundos por transición
+    }
+
+    function detenerIntervalo() {
+        if (intervaloAnimacion) {
+            clearInterval(intervaloAnimacion);
+            intervaloAnimacion = null;
         }
-        
-        else if (step.type === 'final') {
-            barsContainer.innerHTML = '';
-            const sortedFinal = step.sortedArray;
-            const maxVal = step.maxValue;
-            const maxHeight = 200;
-            
-            sortedFinal.forEach(value => {
-                const barDiv = document.createElement('div');
-                barDiv.style.position = 'relative';
-                barDiv.style.display = 'inline-block';
-                barDiv.style.margin = '0 6px';
-                const bar = document.createElement('div');
-                const heightPercent = (value / maxVal) * maxHeight;
-                bar.style.height = `${Math.max(40, heightPercent)}px`;
-                bar.style.width = '55px';
-                bar.style.backgroundColor = '#27ae60';
-                bar.style.border = '2px solid white';
-                const label = document.createElement('div');
-                label.textContent = value;
-                label.style.textAlign = 'center';
-                label.style.color = 'white';
-                label.style.fontSize = '14px';
-                label.style.fontWeight = 'bold';
-                label.style.marginTop = '8px';
-                bar.appendChild(label);
-                barDiv.appendChild(bar);
-                barsContainer.appendChild(barDiv);
-            });
-            countArea.innerHTML = '<div style="color:#27ae60; text-align:center; font-weight:bold; font-size:1.1rem;">✅ ALGORITMO COMPLETADO EXITOSAMENTE</div>';
-            document.getElementById('sortedArrayDisplay').innerHTML = `[ ${sortedFinal.join(', ')} ]`;
-        }
-        
-        // Actualizar estado de animación
-        const statusDiv = document.getElementById('animationStatus');
-        if (currentStepIndex === animationSteps.length - 1) {
-            statusDiv.innerHTML = '✅ Animación completada';
-            if (animationInterval) {
-                clearInterval(animationInterval);
-                animationInterval = null;
-            }
+    }
+
+    // --------------------------------------------------------------
+    // EVENTOS
+    // --------------------------------------------------------------
+    document.getElementById('btnReiniciar').addEventListener('click', () => {
+        indicePasoActual = 0;
+        estaReproduciendo = true;
+        document.getElementById('btnPausaPlay').textContent = 'PAUSAR';
+        renderizarPaso();
+        iniciarIntervalo();
+    });
+
+    document.getElementById('btnPausaPlay').addEventListener('click', function() {
+        if (estaReproduciendo) {
+            detenerIntervalo();
+            this.textContent = 'REANUDAR';
         } else {
-            statusDiv.innerHTML = isPlaying ? '▶ Reproduciendo animación...' : '⏸ Pausado';
+            iniciarIntervalo();
+            this.textContent = 'PAUSAR';
         }
-    }
-    
-    // Función para avanzar al siguiente paso
-    function nextStep() {
-        if (currentStepIndex < animationSteps.length - 1) {
-            currentStepIndex++;
-            renderCurrentStep();
-        } else {
-            if (animationInterval) {
-                clearInterval(animationInterval);
-                animationInterval = null;
-                isPlaying = false;
-            }
-        }
-    }
-    
-    // Iniciar animación automática
-    function startAutoAnimation() {
-        if (animationInterval) clearInterval(animationInterval);
-        isPlaying = true;
-        animationInterval = setInterval(() => {
-            if (isPlaying && currentStepIndex < animationSteps.length - 1) {
-                nextStep();
-            } else if (currentStepIndex >= animationSteps.length - 1) {
-                if (animationInterval) clearInterval(animationInterval);
-                animationInterval = null;
-                isPlaying = false;
-                document.getElementById('animationStatus').innerHTML = '✅ Animación completada';
-            }
-        }, 1800); // 1.8 segundos por paso para lectura cómoda
-    }
-    
-    // Reiniciar animación
-    function resetAnimation() {
-        if (animationInterval) {
-            clearInterval(animationInterval);
-            animationInterval = null;
-        }
-        currentStepIndex = 0;
-        isPlaying = true;
-        renderCurrentStep();
-        startAutoAnimation();
-    }
-    
-    // Pausar/Reanudar
-    function togglePausePlay() {
-        const btn = document.getElementById('pausePlayBtn');
-        if (isPlaying) {
-            isPlaying = false;
-            btn.textContent = 'REANUDAR';
-            document.getElementById('animationStatus').innerHTML = '⏸ Pausado';
-            if (animationInterval) clearInterval(animationInterval);
-            animationInterval = null;
-        } else {
-            isPlaying = true;
-            btn.textContent = 'PAUSAR';
-            document.getElementById('animationStatus').innerHTML = '▶ Reproduciendo animación...';
-            if (!animationInterval && currentStepIndex < animationSteps.length - 1) {
-                animationInterval = setInterval(() => {
-                    if (isPlaying && currentStepIndex < animationSteps.length - 1) {
-                        nextStep();
-                    }
-                }, 1800);
-            }
-        }
-    }
-    
-    // Event listeners
-    document.getElementById('resetBtn').addEventListener('click', resetAnimation);
-    document.getElementById('pausePlayBtn').addEventListener('click', togglePausePlay);
-    
-    // Iniciar animación
-    renderCurrentStep();
-    startAutoAnimation();
+        estaReproduciendo = !estaReproduciendo;
+        renderizarPaso();
+    });
+
+    // Inicio automático
+    renderizarPaso();
+    iniciarIntervalo();
 </script>
 </body>
 </html>
