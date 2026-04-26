@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Counting Sort | Animación del algoritmo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: white;
+            font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border: 3px solid black;
+            padding: 2rem;
+            box-shadow: 10px 10px 0 rgba(121, 24, 161, 0.2);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+            color: #7918A1;
+            border-left: 5px solid #7918A1;
+            padding-left: 1rem;
+        }
+
+        .subtitle {
+            margin-bottom: 2rem;
+            color: #444;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+        }
+
+        .arrays-panel {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .array-box {
+            flex: 1;
+            background: #f8f8f8;
+            border: 2px solid black;
+            padding: 1rem;
+        }
+
+        .array-title {
+            font-weight: 800;
+            font-size: 0.85rem;
+            margin-bottom: 0.8rem;
+            color: black;
+            text-transform: uppercase;
+            border-bottom: 2px solid #7918A1;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        .array-values {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            word-break: break-word;
+            line-height: 1.6;
+            background: white;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+        }
+
+        .animation-section {
+            background: #f8f8f8;
+            border: 2px solid black;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .animation-title {
+            font-weight: 800;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            color: #7918A1;
+        }
+
+        .step-visual {
+            background: #1a1a2e;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 200px;
+        }
+
+        .step-description {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: white;
+            border-left: 4px solid #7918A1;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .bars-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .bar {
+            background-color: #7918A1;
+            width: 45px;
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .count-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .count-cell {
+            background: #2d2f3a;
+            padding: 8px;
+            text-align: center;
+            min-width: 60px;
+            border: 1px solid #7918A1;
+        }
+
+        .count-index {
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        .count-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            border: 2px solid black;
+            background: white;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: #7918A1;
+            color: white;
+            border-color: #7918A1;
+        }
+
+        .step-indicator {
+            font-family: monospace;
+            font-weight: bold;
+            margin-left: auto;
+            font-size: 0.8rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #7918A1;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #7918A1;
+            padding: 0.4rem 1rem;
+        }
+
+        .back-link:hover {
+            background: #7918A1;
+            color: white;
+        }
+
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .container { padding: 1rem; }
+            .bar { width: 30px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>COUNTING SORT</h1>
+    <div class="subtitle">Animación paso a paso | Ordenamiento por conteo</div>
+
+    <div class="arrays-panel">
+        <div class="array-box">
+            <div class="array-title">ARREGLO ORIGINAL</div>
+            <div id="originalArrayDisplay" class="array-values">[ cargando... ]</div>
+        </div>
+        <div class="array-box">
+            <div class="array-title">ARREGLO ORDENADO</div>
+            <div id="sortedArrayDisplay" class="array-values">[ aún no ordenado ]</div>
+        </div>
+    </div>
+
+    <div class="animation-section">
+        <div class="animation-title">VISUALIZACION DEL ALGORITMO</div>
+        <div id="stepDescription" class="step-description">Paso 0: Inicio del algoritmo</div>
+        <div id="visualizationArea" class="step-visual">
+            <div class="bars-container" id="barsContainer"></div>
+            <div id="countArea" class="count-grid"></div>
+        </div>
+        <div class="controls">
+            <button id="prevBtn" disabled>ANTERIOR</button>
+            <button id="nextBtn">SIGUIENTE</button>
+            <button id="resetBtn">REINICIAR</button>
+            <span id="stepCounter" class="step-indicator">Paso 0 / 0</span>
+        </div>
+    </div>
+
+    <a href="https://fabianayala1903353g.github.io/CountingSort/" class="back-link">← Volver al ordenador principal</a>
+</div>
+
+<script>
+    // Obtener datos de la URL (query string)
+    const urlParams = new URLSearchParams(window.location.search);
+    let originalArray = [];
+    const arrayParam = urlParams.get('arr');
+    
+    if (arrayParam) {
+        try {
+            originalArray = JSON.parse(decodeURIComponent(arrayParam));
+        } catch(e) {
+            originalArray = [5, 2, 9, 1, 7, 3];
+        }
+    } else {
+        // Datos de ejemplo si no vienen de la pagina principal
+        originalArray = [5, 2, 9, 1, 7, 3];
+    }
+    
+    // Validar que sean numeros
+    originalArray = originalArray.filter(n => typeof n === 'number' && !isNaN(n));
+    if (originalArray.length === 0) originalArray = [5, 2, 9, 1, 7, 3];
+    
+    // Mostrar arreglo original
+    document.getElementById('originalArrayDisplay').innerHTML = `[ ${originalArray.join(', ')} ]`;
+    
+    // --------------------------------------------------------------
+    // GENERAR PASOS DE COUNTING SORT PARA ANIMACION
+    // --------------------------------------------------------------
+    function generateCountingSortSteps(arr) {
+        const steps = [];
+        const n = arr.length;
+        const maxVal = Math.max(...arr);
+        
+        // Paso 0: estado inicial
+        steps.push({
+            type: 'initial',
+            array: [...arr],
+            countArray: null,
+            maxValue: maxVal,
+            description: `Inicio: Arreglo original. Valor maximo = ${maxVal}`
+        });
+        
+        // Paso 1: Crear arreglo de conteo (tamaño max+1) e inicializar en 0
+        let count = new Array(maxVal + 1).fill(0);
+        steps.push({
+            type: 'count_init',
+            array: [...arr],
+            countArray: [...count],
+            maxValue: maxVal,
+            description: `Paso 1: Crear arreglo de conteo de tamaño ${maxVal+1} (0 hasta ${maxVal}), inicializado en 0.`
+        });
+        
+        // Pasos de conteo: mostrar cada elemento procesado
+        for (let i = 0; i < n; i++) {
+            const value = arr[i];
+            count[value]++;
+            steps.push({
+                type: 'counting',
+                array: [...arr],
+                countArray: [...count],
+                currentIndex: i,
+                currentValue: value,
+                maxValue: maxVal,
+                description: `Contando: elemento ${value} (posicion ${i+1}) → count[${value}] = ${count[value]}`
+            });
+        }
+        
+        // Paso final de conteo completo
+        steps.push({
+            type: 'count_done',
+            array: [...arr],
+            countArray: [...count],
+            maxValue: maxVal,
+            description: `Conteo completado. Ahora reconstruiremos el arreglo ordenado.`
+        });
+        
+        // Reconstruccion paso a paso
+        let sorted = [];
+        let countCopy = [...count];
+        let reconstructionSteps = [];
+        
+        for (let val = 1; val <= maxVal; val++) {
+            while (countCopy[val] > 0) {
+                sorted.push(val);
+                countCopy[val]--;
+                reconstructionSteps.push({
+                    type: 'reconstruct',
+                    array: [...arr],
+                    sortedSoFar: [...sorted],
+                    currentValue: val,
+                    remainingCount: countCopy[val],
+                    countArray: [...countCopy],
+                    maxValue: maxVal,
+                    description: `Reconstruyendo: agregar ${val} (quedan ${countCopy[val]} en count[${val}]). Ordenado parcial: [${sorted.join(', ')}]`
+                });
+            }
+        }
+        
+        steps.push(...reconstructionSteps);
+        
+        // Paso final: arreglo completamente ordenado
+        steps.push({
+            type: 'final',
+            array: [...arr],
+            sortedArray: [...sorted],
+            maxValue: maxVal,
+            description: `Algoritmo finalizado. Arreglo ordenado: [${sorted.join(', ')}]`
+        });
+        
+        return { steps, finalSorted: sorted };
+    }
+    
+    // Generar pasos
+    const { steps, finalSorted } = generateCountingSortSteps(originalArray);
+    let currentStep = 0;
+    
+    // Mostrar arreglo ordenado final
+    document.getElementById('sortedArrayDisplay').innerHTML = `[ ${finalSorted.join(', ')} ]`;
+    
+    // Renderizar paso actual
+    function renderStep() {
+        const step = steps[currentStep];
+        if (!step) return;
+        
+        // Actualizar descripcion
+        document.getElementById('stepDescription').innerHTML = step.description;
+        document.getElementById('stepCounter').innerHTML = `Paso ${currentStep + 1} / ${steps.length}`;
+        
+        // Habilitar/deshabilitar botones
+        document.getElementById('prevBtn').disabled = (currentStep === 0);
+        document.getElementById('nextBtn').disabled = (currentStep === steps.length - 1);
+        
+        const barsContainer = document.getElementById('barsContainer');
+        const countArea = document.getElementById('countArea');
+        
+        // Determinar que mostrar segun tipo de paso
+        if (step.type === 'initial' || step.type === 'counting' || step.type === 'count_init' || step.type === 'count_done') {
+            // Mostrar barras del arreglo original
+            barsContainer.innerHTML = '';
+            const arrayToShow = step.array;
+            const maxHeight = 150;
+            const maxVal = step.maxValue;
+            
+            arrayToShow.forEach(value => {
+                const barDiv = document.createElement('div');
+                barDiv.style.position = 'relative';
+                barDiv.style.display = 'inline-block';
+                barDiv.style.margin = '0 4px';
+                const bar = document.createElement('div');
+                const heightPercent = (value / maxVal) * maxHeight;
+                bar.style.height = `${Math.max(30, heightPercent)}px`;
+                bar.style.width = '50px';
+                bar.style.backgroundColor = '#7918A1';
+                bar.style.border = '1px solid white';
+                const label = document.createElement('div');
+                label.textContent = value;
+                label.style.textAlign = 'center';
+                label.style.color = 'white';
+                label.style.fontSize = '14px';
+                label.style.fontWeight = 'bold';
+                label.style.marginTop = '5px';
+                bar.appendChild(label);
+                barDiv.appendChild(bar);
+                barsContainer.appendChild(barDiv);
+            });
+            
+            // Mostrar arreglo de conteo si existe
+            if (step.countArray) {
+                countArea.innerHTML = '<div style="width:100%; text-align:center; margin-bottom:10px; color:#aaa;">ARREGLO DE CONTEOS</div>';
+                const countGrid = document.createElement('div');
+                countGrid.style.display = 'flex';
+                countGrid.style.flexWrap = 'wrap';
+                countGrid.style.gap = '8px';
+                countGrid.style.justifyContent = 'center';
+                
+                for (let i = 1; i <= step.maxValue; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'count-cell';
+                    cell.innerHTML = `<div class="count-index">count[${i}]</div><div class="count-value">${step.countArray[i] || 0}</div>`;
+                    countGrid.appendChild(cell);
+                }
+                countArea.innerHTML = '';
+                countArea.appendChild(countGrid);
+            } else {
+                countArea.innerHTML = '<div style="color:#aaa; text-align:center;">Esperando arreglo de conteos...</div>';
+            }
+        }
+        
+        else if (step.type === 'reconstruct') {
+            // Mostrar reconstruccion: barras del arreglo ordenado parcial
+            barsContainer.innerHTML = '';
+            const sortedSoFar = step.sortedSoFar || [];
+            const maxVal = step.maxValue;
+            const maxHeight = 150;
+            
+            sortedSoFar.forEach(value => {
+                const barDiv = document.createElement('div');
+                barDiv.style.position = 'relative';
+                barDiv.style.display = 'inline-block';
+                barDiv.style.margin = '0 4px';
+                const bar = document.createElement('div');
+                const heightPercent = (value / maxVal) * maxHeight;
+                bar.style.height = `${Math.max(30, heightPercent)}px`;
+                bar.style.width = '50px';
+                bar.style.backgroundColor = '#2ecc71';
+                bar.style.border = '1px solid white';
+                const label = document.createElement('div');
+                label.textContent = value;
+                label.style.textAlign = 'center';
+                label.style.color = 'white';
+                label.style.fontSize = '14px';
+                label.style.fontWeight = 'bold';
+                label.style.marginTop = '5px';
+                bar.appendChild(label);
+                barDiv.appendChild(bar);
+                barsContainer.appendChild(barDiv);
+            });
+            
+            // Mostrar conteos restantes
+            if (step.countArray) {
+                countArea.innerHTML = '<div style="width:100%; text-align:center; margin-bottom:10px; color:#aaa;">CONTEOS RESTANTES</div>';
+                const countGrid = document.createElement('div');
+                countGrid.style.display = 'flex';
+                countGrid.style.flexWrap = 'wrap';
+                countGrid.style.gap = '8px';
+                countGrid.style.justifyContent = 'center';
+                
+                for (let i = 1; i <= step.maxValue; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'count-cell';
+                    cell.innerHTML = `<div class="count-index">count[${i}]</div><div class="count-value">${step.countArray[i] || 0}</div>`;
+                    countGrid.appendChild(cell);
+                }
+                countArea.innerHTML = '';
+                countArea.appendChild(countGrid);
+            }
+        }
+        
+        else if (step.type === 'final') {
+            // Mostrar arreglo final ordenado
+            barsContainer.innerHTML = '';
+            const sortedFinal = step.sortedArray;
+            const maxVal = step.maxValue;
+            const maxHeight = 150;
+            
+            sortedFinal.forEach(value => {
+                const barDiv = document.createElement('div');
+                barDiv.style.position = 'relative';
+                barDiv.style.display = 'inline-block';
+                barDiv.style.margin = '0 4px';
+                const bar = document.createElement('div');
+                const heightPercent = (value / maxVal) * maxHeight;
+                bar.style.height = `${Math.max(30, heightPercent)}px`;
+                bar.style.width = '50px';
+                bar.style.backgroundColor = '#27ae60';
+                bar.style.border = '1px solid white';
+                const label = document.createElement('div');
+                label.textContent = value;
+                label.style.textAlign = 'center';
+                label.style.color = 'white';
+                label.style.fontSize = '14px';
+                label.style.fontWeight = 'bold';
+                label.style.marginTop = '5px';
+                bar.appendChild(label);
+                barDiv.appendChild(bar);
+                barsContainer.appendChild(barDiv);
+            });
+            countArea.innerHTML = '<div style="color:#27ae60; text-align:center; font-weight:bold;">ALGORITMO COMPLETADO</div>';
+        }
+    }
+    
+    // Navegacion
+    function nextStep() {
+        if (currentStep < steps.length - 1) {
+            currentStep++;
+            renderStep();
+        }
+    }
+    
+    function prevStep() {
+        if (currentStep > 0) {
+            currentStep--;
+            renderStep();
+        }
+    }
+    
+    function resetAnimation() {
+        currentStep = 0;
+        renderStep();
+    }
+    
+    // Event listeners
+    document.getElementById('nextBtn').addEventListener('click', nextStep);
+    document.getElementById('prevBtn').addEventListener('click', prevStep);
+    document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+    
+    // Render inicial
+    renderStep();
+</script>
+</body>
+</html>
