@@ -254,7 +254,7 @@
 <body>
 <div class="header">
     <h1>COUNTING SORT</h1>
-    <p>Fabián Ayala Saucedo    Analisis de Algoritmos</p>
+    <p>Fabián Ayala Saucedo            Analisis de Algoritmos</p>
 </div>
 
 <div class="main-content">
@@ -426,7 +426,7 @@
         
         // Mostrar estadísticas incluyendo si hay repeticiones
         const tieneRepetidos = new Set(valores).size !== valores.length;
-        estadisticasInfo.innerHTML = `Valor Máximo: ${resObj.max} | Cubetas: ${resObj.max + 1} | Elementos: ${valores.length} | ${tieneRepetidos ? 'CON repeticiones' : 'Sin repeticiones'}`;
+        estadisticasInfo.innerHTML = `Valor Máximo: ${resObj.max} | Elementos: ${valores.length}`;
         
         // MOSTRAR EL BOTÓN DE ANIMACIÓN SOLO DESPUÉS DE ORDENAR
         animationButtonContainer.style.display = 'block';
