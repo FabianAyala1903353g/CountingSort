@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Counting Sort Dinámico | 0-200</title>
+    <title>Counting Sort | Rango 0-200</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
@@ -111,10 +111,6 @@
             background: #7918A1;
             border-color: #7918A1;
             color: white;
-        }
-
-        button:active {
-            transform: scale(0.98);
         }
 
         .btn-outline {
@@ -253,47 +249,19 @@
             padding-top: 0.5rem;
             font-weight: 600;
         }
-
-        .inputs-wrapper::-webkit-scrollbar {
-            width: 6px;
-        }
-        .inputs-wrapper::-webkit-scrollbar-track {
-            background: #f0f0f0;
-        }
-        .inputs-wrapper::-webkit-scrollbar-thumb {
-            background: #7918A1;
-        }
-
-        .initial-message {
-            text-align: center;
-            padding: 1.5rem;
-            color: #666;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-            border: 1px dashed black;
-            background: #fafafa;
-            width: 100%;
-            font-weight: 600;
-        }
-
-        .bottom-button {
-            margin-top: 1rem;
-            display: flex;
-            justify-content: flex-start;
-        }
     </style>
 </head>
 <body>
 <div class="header">
     <h1>COUNTING SORT DINÁMICO</h1>
-    <p>Rango: 0 a 200 | Tamaño de cubetas basado en el valor máximo</p>
+    <p>Rango: 0 a 200 | Tamaño de cubetas según valor máximo</p>
 </div>
 
 <div class="main-content">
     <div class="control-panel">
         <div class="control-group">
             <label>CANTIDAD DE ELEMENTOS</label>
-            <input type="number" id="arraySizeInput" min="1" max="100" value="10" step="1">
+            <input type="number" id="arraySizeInput" min="1" max="100" value="10">
         </div>
         <div class="control-group">
             <label>&nbsp;</label>
@@ -312,9 +280,7 @@
     <div class="array-section">
         <div class="array-title">ARREGLO DE ENTEROS (0 a 200)</div>
         <div class="inputs-wrapper">
-            <div id="inputsContainer" class="inputs-grid">
-                <div class="initial-message">Configure la cantidad y presione "GENERAR ARREGLO"</div>
-            </div>
+            <div id="inputsContainer" class="inputs-grid"></div>
         </div>
     </div>
 
@@ -326,7 +292,7 @@
             <div id="infoStats" class="info-stats">Esperando generación...</div>
         </div>
         
-        <div id="animationButtonContainer" class="bottom-button" style="display: none;">
+        <div id="animationButtonContainer" style="margin-top: 1rem; display: none;">
             <button id="showAnimationBtn" class="btn-outline">MOSTRAR ANIMACIÓN</button>
         </div>
     </div>
@@ -334,7 +300,6 @@
 
 <script>
     function algoritmoCountingSort(arregloEntrada) {
-        if (!Array.isArray(arregloEntrada)) throw new Error("Entrada inválida");
         if (arregloEntrada.length === 0) return { ordenado: [], max: 0 };
         
         let valorMaximo = 0;
@@ -371,47 +336,10 @@
     const botonAleatorio = document.getElementById('randomizeBtn');
     const botonOrdenar = document.getElementById('sortBtn');
     const botonAnimacion = document.getElementById('showAnimationBtn');
-    const contenedorBotonAnimacion = document.getElementById('animationButtonContainer');
     const contenedorEntradas = document.getElementById('inputsContainer');
     const visualizacionOrdenada = document.getElementById('sortedDisplay');
     const divMensajeError = document.getElementById('errorMsg');
     const estadisticasInfo = document.getElementById('infoStats');
-    
-    function ocultarError() {
-        divMensajeError.style.display = 'none';
-    }
-    
-    function mostrarError(mensaje) {
-        divMensajeError.textContent = mensaje;
-        divMensajeError.style.display = 'block';
-    }
-    
-    function obtenerArregloActualDeInputs() {
-        const elementosInput = document.querySelectorAll('.array-elem-input');
-        if (elementosInput.length === 0) return { error: true, mensaje: "No hay campos." };
-        
-        const valores = [];
-        for (let inp of elementosInput) {
-            let num = parseInt(inp.value);
-            if (isNaN(num) || num < 0 || num > 200) return { error: true, mensaje: "Valores deben ser 0-200" };
-            valores.push(num);
-        }
-        return { error: false, arreglo: valores };
-    }
-    
-    function actualizarVisualizacionOrdenada() {
-        ocultarError();
-        const resultado = obtenerArregloActualDeInputs();
-        if (resultado.error) {
-            mostrarError(resultado.mensaje);
-            return;
-        }
-        
-        const resObj = algoritmoCountingSort(resultado.arreglo);
-        visualizacionOrdenada.innerHTML = `ORIGINAL: [ ${resultado.arreglo.join(", ")} ]<br>ORDENADO: [ ${resObj.ordenado.join(", ")} ]`;
-        estadisticasInfo.innerHTML = `Valor Máximo: ${resObj.max} | Cubetas creadas: ${resObj.max + 1}`;
-        contenedorBotonAnimacion.style.display = 'flex';
-    }
     
     function generarCamposEntrada(tamano) {
         const tamanoFinal = Math.min(tamano, 100);
@@ -426,16 +354,37 @@
         }
         
         visualizacionOrdenada.innerHTML = "[ sin ordenar ]";
-        contenedorBotonAnimacion.style.display = 'none';
-        ocultarError();
+        document.getElementById('animationButtonContainer').style.display = 'none';
+        divMensajeError.style.display = 'none';
     }
     
     botonCrear.onclick = () => generarCamposEntrada(parseInt(inputTamano.value));
     botonAleatorio.onclick = () => generarCamposEntrada(parseInt(inputTamano.value));
-    botonOrdenar.onclick = actualizarVisualizacionOrdenada;
+    
+    botonOrdenar.onclick = () => {
+        const elementosInput = document.querySelectorAll('.array-elem-input');
+        const valores = [];
+        for (let inp of elementosInput) {
+            let num = parseInt(inp.value);
+            if (isNaN(num) || num < 0 || num > 200) {
+                divMensajeError.textContent = "Error: Rango 0 a 200 únicamente.";
+                divMensajeError.style.display = 'block';
+                return;
+            }
+            valores.push(num);
+        }
+        
+        divMensajeError.style.display = 'none';
+        const resObj = algoritmoCountingSort(valores);
+        visualizacionOrdenada.innerHTML = `ORIGINAL: [ ${valores.join(", ")} ]<br>ORDENADO: [ ${resObj.ordenado.join(", ")} ]`;
+        estadisticasInfo.innerHTML = `Valor Máximo: ${resObj.max} | Cubetas creadas: ${resObj.max + 1}`;
+        document.getElementById('animationButtonContainer').style.display = 'block';
+    };
+
     botonAnimacion.onclick = () => {
-        const res = obtenerArregloActualDeInputs();
-        window.open(`https://fabianayala1903353g.github.io/CountingSort/animacion.html?arr=${encodeURIComponent(JSON.stringify(res.arreglo))}`, '_blank');
+        const elementosInput = document.querySelectorAll('.array-elem-input');
+        const valores = Array.from(elementosInput).map(i => parseInt(i.value));
+        window.open(`https://fabianayala1903353g.github.io/CountingSort/animacion.html?arr=${encodeURIComponent(JSON.stringify(valores))}`, '_blank');
     };
 
     generarCamposEntrada(10);
